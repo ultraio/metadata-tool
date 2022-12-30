@@ -1,4 +1,5 @@
 // Placeholder code for metadata tool
+import { DynamicResource, StaticResource, FactoryMetaData, TokenMetaData } from './types';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
