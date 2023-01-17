@@ -1,6 +1,7 @@
 import { glob as globMod } from 'glob';
 import { promptUser, sleep } from './utils';
 import path from 'path';
+import fs from 'fs';
 import { promisify } from 'util';
 const glob = promisify(globMod);
 
@@ -11,6 +12,11 @@ const main = async () => {
 
     if (!folderPath) {
         await promptUser('Invalid folder path!');
+        return;
+    }
+
+    if (!fs.existsSync(folderPath)) {
+        await promptUser(`Directory ${folderPath} does not exist!`);
         return;
     }
 
