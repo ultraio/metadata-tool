@@ -1,4 +1,4 @@
-import readline from 'readline';
+import inquirer from 'inquirer';
 
 /**
  * Util function to prompt the user. Can also be used for 'Press enter to continue..'
@@ -7,18 +7,14 @@ import readline from 'readline';
  * @param {string} query - The question you want to ask the user.
  * @return {*}  {Promise<string>} - A promise that resolves to a string answer
  */
-export function promptUser(query: string): Promise<string> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    return new Promise((resolve) =>
-        rl.question(query, (ans) => {
-            rl.close();
-            resolve(ans);
-        })
-    );
+export async function promptUser(query: string): Promise<{ answer: string }> {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'answer',
+            message: query,
+        },
+    ]);
 }
 
 /**

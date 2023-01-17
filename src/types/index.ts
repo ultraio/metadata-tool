@@ -1,3 +1,5 @@
+export type Environment = 'dev' | 'prod' | 'qa' | 'staging' | 'custom';
+
 /**
  * A static resource provides a hash to check integrity
  */
