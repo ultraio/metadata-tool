@@ -1,6 +1,6 @@
 import { glob as globMod } from 'glob';
 import inquirer from 'inquirer';
-import { promptUser } from './utils';
+import { promptUser, isValidUrl } from './utils';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
@@ -71,6 +71,9 @@ const main = async () => {
             when(answers) {
                 return answers.envType == 'custom';
             },
+            validate(answer) {
+                return isValidUrl(answer) ? true : 'Please input a valid URL';
+            },
         },
     ]);
 
@@ -85,7 +88,7 @@ const main = async () => {
         )}`
     );
 
-    // TODO: future tickets: process files here
+    // TODO:  future tickets: process files here
     await promptUser('Finished processing..');
 };
 

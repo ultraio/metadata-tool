@@ -24,3 +24,17 @@ export async function promptUser(query: string): Promise<{ answer: string }> {
 export function sleep(ms: number) {
     new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Util function to check if a string is a valid URL
+ * @param url - The string to validate.
+ * @returns boolean
+ */
+export function isValidUrl(url: string) {
+    try {
+        new URL(url);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
