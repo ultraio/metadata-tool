@@ -1,11 +1,11 @@
 import { glob as globMod } from 'glob';
 import inquirer from 'inquirer';
-import { promptUser, sleep } from './utils';
+import { promptUser } from './utils';
 import path from 'path';
+import fs from 'fs';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
 const glob = promisify(globMod);
-import { Environment } from './types';
 
 const main = async () => {
     const config: Config = {};
@@ -26,6 +26,12 @@ const main = async () => {
         console.log('Error: Invalid or missing folder path!');
         return;
     }
+
+    if (!fs.existsSync(folderPath)) {
+        await promptUser(`Directory ${folderPath} does not exist!`);
+        return;
+    }
+
     console.log(`Processing directory: ${folderPath}`);
 
     // Check if files exists on the given path
