@@ -21,15 +21,24 @@ const main = async () => {
     ]);
 
     // path is passed as cli argument or dragged-dropped into the binary
-    const folderPath = process.argv[2];
-    if (!folderPath) {
-        console.log('Error: Invalid or missing folder path!');
-        return;
-    }
+    let folderPath = process.argv[2];
 
+    // validate folder path
     if (!fs.existsSync(folderPath)) {
-        await promptUser(`Directory ${folderPath} does not exist!`);
-        return;
+        console.log(`Directory ${folderPath} does not exist!. Please provide a valid directory.`);
+
+        ({ folderPath } = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'folderPath',
+                message: 'Enter directory path: ',
+                validate(answer) {
+                    return fs.existsSync(answer)
+                        ? true
+                        : `Directory ${answer} does not exist!. Please provide a valid directory.`;
+                },
+            },
+        ]));
     }
 
     console.log(`Processing directory: ${folderPath}`);
@@ -43,7 +52,7 @@ const main = async () => {
 
     if (!files || files.length == 0) {
         await promptUser(
-            'Required factory.json/csv and defaultToken.json/csv files not found. Please make sure the files exists in the provided directory!'
+            `Required factory.${fileType} and defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
         );
         return;
     }
@@ -69,7 +78,7 @@ const main = async () => {
             name: 'customUrl',
             message: 'Enter custom URL: ',
             when(answers) {
-                return answers.envType == 'custom';
+                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
             },
             validate(answer) {
                 return isValidUrl(answer) ? true : 'Please input a valid URL';
@@ -82,6 +91,7 @@ const main = async () => {
         setCustomEnvUrl(customUrl);
     }
 
+    // remove later - debugging only
     console.log(
         `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
             config.environment!
