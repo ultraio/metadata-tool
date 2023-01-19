@@ -42,7 +42,7 @@ const main = async () => {
     });
 
     if (!files || files.length == 0) {
-        console.log(
+        await promptUser(
             'Required factory.json/csv and defaultToken.json/csv files not found. Please make sure the files exists in the provided directory!'
         );
         return;
