@@ -45,7 +45,9 @@ const main = async () => {
 
     // Check if files exists on the given path
     const files = (
-        await glob(path.join(folderPath, `+(factory.${fileType}|defaultToken.${fileType}|tokens.${fileType})`))
+        await glob(path.join(folderPath, `+(factory.${fileType}|defaultToken.${fileType}|tokens.${fileType})`), {
+            windowsPathsNoEscape: true,
+        })
     ).map((f) => {
         return path.basename(f);
     });
