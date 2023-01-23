@@ -21,6 +21,7 @@
     "homepage": "https://github.com/ultraio/metadata-tool#readme",
     "devDependencies": {
         "@types/glob": "^8.0.0",
+        "@types/inquirer": "^9.0.3",
         "pkg": "^5.8.0",
         "rimraf": "^3.0.2",
         "ts-node": "^10.9.1",
@@ -30,7 +31,8 @@
         "metadataTool": "./bin/index.js"
     },
     "dependencies": {
-        "glob": "^8.0.3"
+        "glob": "^8.0.3",
+        "inquirer": "^8.2.5"
     },
     "prettier": {
         "tabWidth": 4,

@@ -1,48 +1,122 @@
 import { glob as globMod } from 'glob';
-import { promptUser, sleep } from './utils';
+import inquirer from 'inquirer';
+import { promptUser, isValidUrl } from './utils';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
+import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
 const glob = promisify(globMod);
 
 const main = async () => {
-    // Ideally we should ask user if they want to provide .json or .csv file beforehand. We can use something like inquirer module to provide the user with selectable options to choose from .json or .csv
-    // and then we'll know exactly which files to look for: factory.json etc or factory.csv etc
-    const folderPath = process.argv[2];
+    const config: Config = {};
+    let fileType: 'csv' | 'json' = 'csv';
+    let folderPath = process.argv[2]; // path is passed as cli argument or dragged-dropped into the binary
 
-    if (!folderPath) {
-        await promptUser('Invalid folder path!');
-        return;
-    }
-
+    // validate folder path
     if (!fs.existsSync(folderPath)) {
-        await promptUser(`Directory ${folderPath} does not exist!`);
-        return;
+        console.log(`Directory ${folderPath} does not exist!. Please provide a valid directory.`);
+
+        ({ folderPath } = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'folderPath',
+                message: 'Enter directory path: ',
+                validate(answer) {
+                    return fs.existsSync(answer)
+                        ? true
+                        : `Directory ${answer} does not exist!. Please provide a valid directory.`;
+                },
+            },
+        ]));
     }
 
     console.log(`Processing directory: ${folderPath}`);
 
-    const files = (
-        await glob(path.join(folderPath, '+(factory.+(json|csv)|defaultToken.+(json|csv)|tokens.+(json|csv))'))
+    // Check what file type to process; either csv or json
+    const allFiles = (
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|defaultToken.+(json|csv)|tokens.+(json|csv))`), {
+            windowsPathsNoEscape: true,
+        })
     ).map((f) => {
         return path.basename(f);
     });
 
-    if (!files || files.length == 0) {
+    const csvFiles = allFiles.filter((f) => {
+        return path.extname(f) == '.csv';
+    });
+
+    const jsonFiles = allFiles.filter((f) => {
+        return path.extname(f) == '.json';
+    });
+
+    // case when both filetypes are present, ask user to choose one.
+    if (csvFiles.length > 0 && jsonFiles.length > 0) {
+        ({ fileType } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'fileType',
+                message: 'Both .json and .csv files found. Select filetype to process: ',
+                choices: ['json', 'csv'],
+            },
+        ]));
+    }
+    // case when only json files are present, switch fileType to json
+    else if (csvFiles.length == 0 && jsonFiles.length > 0) {
+        fileType = 'json';
+    }
+    // else, default fileType is csv
+
+    // check if required files are present
+    const files = fileType == 'csv' ? csvFiles : jsonFiles;
+    if (!(files.includes(`factory.${fileType}`) && files.includes(`defaultToken.${fileType}`))) {
         await promptUser(
-            'Required factory.json/csv and defaultToken.json/csv files not found. Please make sure the files exists in the provided directory!'
+            `Required factory.${fileType} and/or defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
         );
         return;
     }
 
-    console.log(files);
-
-    if (files.includes('tokens.csv') || files.includes('tokens.json')) {
-        console.log('tokens.csv | tokens.json file was also found in the provided directory.');
+    // notify if tokens file is present
+    if (files.includes(`tokens.${fileType}`)) {
+        console.log(`tokens.${fileType} file was also found in the provided directory.`);
     }
 
-    // TODO: future tickets: process files here
+    // Input collection name and environment for urls
+    const { answer: collectionName } = await promptUser('Enter collection name:');
+    config.collectionName = collectionName;
 
+    const { envType, customUrl } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'envType',
+            message: 'Select environment type: ',
+            choices: ['dev', 'prod', 'qa', 'staging', 'custom'],
+        },
+        {
+            type: 'input',
+            name: 'customUrl',
+            message: 'Enter custom URL: ',
+            when(answers) {
+                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
+            },
+            validate(answer) {
+                return isValidUrl(answer) ? true : 'Please input a valid URL';
+            },
+        },
+    ]);
+
+    config.environment = envType;
+    if (envType == 'custom') {
+        setCustomEnvUrl(customUrl);
+    }
+
+    // remove later - debugging only
+    console.log(
+        `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
+            config.environment!
+        )}`
+    );
+
+    // TODO:  future tickets: process files here
     await promptUser('Finished processing..');
 };
 
