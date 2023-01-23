@@ -9,19 +9,8 @@ const glob = promisify(globMod);
 
 const main = async () => {
     const config: Config = {};
-
-    // Input file type (either .csv or .json)
-    const { fileType } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'fileType',
-            message: 'Select filetype to process: ',
-            choices: ['json', 'csv'],
-        },
-    ]);
-
-    // path is passed as cli argument or dragged-dropped into the binary
-    let folderPath = process.argv[2];
+    let fileType: 'csv' | 'json' = 'csv';
+    let folderPath = process.argv[2]; // path is passed as cli argument or dragged-dropped into the binary
 
     // validate folder path
     if (!fs.existsSync(folderPath)) {
@@ -43,23 +32,50 @@ const main = async () => {
 
     console.log(`Processing directory: ${folderPath}`);
 
-    // Check if files exists on the given path
-    const files = (
-        await glob(path.join(folderPath, `+(factory.${fileType}|defaultToken.${fileType}|tokens.${fileType})`), {
+    // Check what file type to process; either csv or json
+    const allFiles = (
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|defaultToken.+(json|csv)|tokens.+(json|csv))`), {
             windowsPathsNoEscape: true,
         })
     ).map((f) => {
         return path.basename(f);
     });
 
-    if (!files || files.length == 0) {
+    const csvFiles = allFiles.filter((f) => {
+        return path.extname(f) == '.csv';
+    });
+
+    const jsonFiles = allFiles.filter((f) => {
+        return path.extname(f) == '.json';
+    });
+
+    // case when both filetypes are present, ask user to choose one.
+    if (csvFiles.length > 0 && jsonFiles.length > 0) {
+        ({ fileType } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'fileType',
+                message: 'Both .json and .csv files found. Select filetype to process: ',
+                choices: ['json', 'csv'],
+            },
+        ]));
+    }
+    // case when only json files are present, switch fileType to json
+    else if (csvFiles.length == 0 && jsonFiles.length > 0) {
+        fileType = 'json';
+    }
+    // else, default fileType is csv
+
+    // check if required files are present
+    const files = fileType == 'csv' ? csvFiles : jsonFiles;
+    if (!(files.includes(`factory.${fileType}`) && files.includes(`defaultToken.${fileType}`))) {
         await promptUser(
-            `Required factory.${fileType} and defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
+            `Required factory.${fileType} and/or defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
         );
         return;
     }
-    console.log(files);
 
+    // notify if tokens file is present
     if (files.includes(`tokens.${fileType}`)) {
         console.log(`tokens.${fileType} file was also found in the provided directory.`);
     }
