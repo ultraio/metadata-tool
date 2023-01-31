@@ -1,6 +1,6 @@
 import { glob as globMod } from 'glob';
 import inquirer from 'inquirer';
-import { promptUser, isValidUrl } from './utils';
+import { promptUser, isValidUrl, CSVParser } from './utils';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
@@ -68,9 +68,9 @@ const main = async () => {
 
     // check if required files are present
     const files = fileType == 'csv' ? csvFiles : jsonFiles;
-    if (!(files.includes(`factory.${fileType}`) && files.includes(`defaultToken.${fileType}`))) {
+    if (!files.includes(`factory.${fileType}`)) {
         await promptUser(
-            `Required factory.${fileType} and/or defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
+            `Required factory.${fileType} file not found. Please make sure the file exists in the provided directory!`
         );
         return;
     }
@@ -116,7 +116,17 @@ const main = async () => {
         )}`
     );
 
-    // TODO:  future tickets: process files here
+    // File parsing and processing
+    let jsonData = {};
+    if (fileType == 'csv') {
+        jsonData = await CSVParser.parse(folderPath);
+    } else {
+        // JSON is already present, need to validate and upload
+        // do something with jsonData
+    }
+
+    console.log(jsonData);
+
     await promptUser('Finished processing..');
 };
 

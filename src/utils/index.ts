@@ -1,4 +1,5 @@
 import inquirer from 'inquirer';
+import { CSVParser } from './csvParser';
 
 /**
  * Util function to prompt the user. Can also be used for 'Press enter to continue..'
@@ -38,3 +39,5 @@ export function isValidUrl(url: string) {
         return false;
     }
 }
+
+export { CSVParser };
