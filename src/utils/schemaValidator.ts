@@ -1,7 +1,7 @@
 import ajv from 'ajv';
 
-import { FactorySchema } from 'schemas/factory';
-import { TokenSchema } from 'schemas/token';
+import { FactorySchema } from '../schemas/factory';
+import { TokenSchema } from '../schemas/token';
 
 const ajvInstance = new ajv();
 const SchemaBindings = {
@@ -19,7 +19,7 @@ const SchemaBindings = {
  * @param {(Object | string)} data
  * @return {boolean}
  */
-function validate(type: keyof typeof SchemaBindings, data: Object | string): boolean {
+function validate(type: keyof typeof SchemaBindings, data: Object | string, hideErrors = false): boolean {
     if (typeof SchemaBindings[type] === 'undefined') {
         throw new Error(`File type ${type} cannot be validated.`);
     }
@@ -35,7 +35,7 @@ function validate(type: keyof typeof SchemaBindings, data: Object | string): boo
     const validator = ajvInstance.compile(SchemaBindings[type]);
     const isValid = validator(data);
 
-    if (!isValid) {
+    if (!isValid && !hideErrors) {
         console.log(validator.errors);
     }
 

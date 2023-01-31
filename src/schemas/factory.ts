@@ -7,6 +7,13 @@ export const FactorySchema = {
             description:
                 'The version of the NFT Factory metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
         },
+        type: {
+            type: 'string',
+            enum: ['game', 'collectible'],
+            minLength: 1,
+            maxLength: 256,
+            description: 'Identifies the type of asset that this NFT Factory represents',
+        },
         name: {
             type: 'string',
             minLength: 1,

@@ -9,11 +9,11 @@
         "outDir": "dist",
         "baseUrl": ".",
         "paths": {
-            "*": ["node_modules/*", "src/*"]
+            "*": ["node_modules/*", "src/*", "test/*"]
         },
         "declaration": true,
         "strict": true
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "test/schemaValidator.test.ts"],
     "exclude": ["./test/**/*"]
 }
