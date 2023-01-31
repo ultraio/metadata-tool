@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
+import { SchemaValidator } from 'utils/schemaValidator';
 const glob = promisify(globMod);
 
 const main = async () => {
@@ -117,6 +118,10 @@ const main = async () => {
     );
 
     // TODO:  future tickets: process files here
+
+    // TODO: File Validation
+    // SchemaValidator.validate(..., ...);
+
     await promptUser('Finished processing..');
 };
 
