@@ -5,8 +5,6 @@ import { FactoryMetaData, Metadata, NFTData, StaticResource, TokenMetaData } fro
 import { Config, getEnvironmentUrl } from 'config';
 
 export class CSVParser {
-    constructor(private config: Config) {}
-
     /**
      * It takes a directory path, reads the file, parses the CSV, and returns the records
      * @param {string} folderPath - The path to the file you want to process.
@@ -44,10 +42,6 @@ export class CSVParser {
         metadata.author = record['author'];
         metadata.defaultLocale = record['defaultLocale'];
 
-        // TODO:
-        // Hash generation is to be done in a future ticket: https://ultraio.atlassian.net/browse/BLOCK-927
-        // Schema validation might fail without a hash though(?)
-        // Parsing -> Hashing -> Validation instead of Parsing -> Validation -> Hashing
         metadata.media = {
             product: {
                 contentType: '',
@@ -55,7 +49,7 @@ export class CSVParser {
                     hash: '',
                     type: 'SHA256',
                 },
-                uris: [record['product']], // TODO: all URIs need to be the wasabi bucket links: (getEnvironmentUrl(this.config.environment!)  + record['product'])
+                uris: [record['product']],
             },
             square: {
                 contentType: '',
