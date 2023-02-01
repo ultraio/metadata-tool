@@ -98,6 +98,11 @@ export interface FactoryMetaData extends Metadata {
 
 export interface TokenMetaData extends Metadata {
     /**
+     * Serial number for the token
+     */
+    serialNumber: string;
+
+    /**
      * Specify the attributes for this token.
      * Should match token factory.
      */

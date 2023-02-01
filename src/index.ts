@@ -120,7 +120,8 @@ const main = async () => {
     // File parsing and processing
     let jsonData = {} as NFTData;
     if (fileType == 'csv') {
-        jsonData = await CSVParser.parse(folderPath);
+        const csvParser = new CSVParser(config);
+        jsonData = await csvParser.parse(folderPath);
     } else {
         // JSON is already present, need to validate and upload
         // do something with jsonData
