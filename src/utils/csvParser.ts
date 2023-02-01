@@ -109,8 +109,6 @@ export class CSVParser {
      * @returns An object of type FactoryMetaData
      */
     private prepareFactory = (record: any): FactoryMetaData => {
-        console.log('parsing factory');
-        console.log(record);
         let factory: FactoryMetaData = this.prepareMetadata(record);
 
         // parse/process/add any FactoryMetadata specific properties here
@@ -195,10 +193,7 @@ export class CSVParser {
     /**
      * It reads the factory and tokens CSV files, and returns an object with the factory and tokens data
      * @param {string} folderPath - The path to the folder containing the factory.csv and tokens.csv files.
-     * @returns An object with the following properties:
-     *     `factory: FactoryMetaData,
-     *     defaultToken: TokenMetaData | undefined,
-     *     tokens: TokenMetaData[]`
+     * @returns An object of type NFTData
      */
     async parse(folderPath: string): Promise<NFTData> {
         const factory: FactoryMetaData[] = await this.processFile(folderPath, 'factory');

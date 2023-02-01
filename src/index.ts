@@ -1,6 +1,6 @@
 import { glob as globMod } from 'glob';
 import inquirer from 'inquirer';
-import { promptUser, isValidUrl, CSVParser } from './utils';
+import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
@@ -35,11 +35,11 @@ const main = async () => {
 
     // Check what file type to process; either csv or json
     const allFiles = (
-        await glob(path.join(folderPath, '**', `+(factory.+(json|csv)|tokens.csv|token*.json|defaultToken.json)`), {
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json)`), {
             windowsPathsNoEscape: true,
         })
     ).map((f) => {
-        return f.replace(folderPath, '');
+        return path.basename(f);
     });
 
     const csvFiles = allFiles.filter((f) => {
@@ -67,17 +67,7 @@ const main = async () => {
     }
     // else, default fileType is csv
 
-    console.log(path.join(folderPath, '**', `+(factory.+(json|csv)|tokens.csv|token*.json)`));
-    console.log(allFiles);
-    console.log(csvFiles);
-    console.log(jsonFiles);
-    console.log(
-        jsonFiles.map((f) => {
-            return path.join(folderPath, f);
-        })
-    );
-
-    // check if required files are present
+    // check if factory.json|csv is present
     const files = fileType == 'csv' ? csvFiles : jsonFiles;
     if (!files.includes(`factory.${fileType}`)) {
         await promptUser(
@@ -125,17 +115,16 @@ const main = async () => {
     }
 
     // File parsing and processing
-    let jsonData = {} as NFTData;
-    if (fileType == 'csv') {
-        const csvParser = new CSVParser();
-        jsonData = await csvParser.parse(folderPath);
-        config.collectionName = jsonData.factory.name; // collection name is read from factory.csv
-    } else {
-        // JSON is already present, need to validate and upload
-        // do something with jsonData
-    }
 
-    console.log(JSON.stringify(jsonData, null, 2));
+    // use csv or json parser, depending on the fileType
+    let nftData =
+        fileType == 'csv' ? await new CSVParser().parse(folderPath) : await new JSONParser().parse(folderPath);
+
+    // collection name is read from factory.csv/factory.json
+    config.collectionName = nftData.factory.name;
+
+    console.log(JSON.stringify(nftData, null, 2));
+
     // remove later - debugging only
     console.log(
         `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
