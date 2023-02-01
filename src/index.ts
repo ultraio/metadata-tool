@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
+import { NFTData } from 'types';
 const glob = promisify(globMod);
 
 const main = async () => {
@@ -117,7 +118,7 @@ const main = async () => {
     );
 
     // File parsing and processing
-    let jsonData = {};
+    let jsonData = {} as NFTData;
     if (fileType == 'csv') {
         jsonData = await CSVParser.parse(folderPath);
     } else {
@@ -125,7 +126,12 @@ const main = async () => {
         // do something with jsonData
     }
 
-    console.log(jsonData);
+    console.log(JSON.stringify(jsonData, null, 2));
+
+    // TODO: Validate
+    // validator.validate(jsonData.factory)
+    // validator.validate(jsonData.tokens)
+    // ......
 
     await promptUser('Finished processing..');
 };

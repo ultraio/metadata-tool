@@ -1,22 +1,22 @@
 import fs from 'fs';
-import { parse as parseCsv } from 'csv-parse';
-import { FactoryMetaData, StaticResource, TokenMetaData } from 'types';
 import path from 'path';
+import { parse as parseCsv } from 'csv-parse';
+import { FactoryMetaData, Metadata, NFTData, StaticResource, TokenMetaData } from 'types';
 
 /**
- * It takes a file path, reads the file, parses the CSV, and returns the records
- * @param {string} filePath - The path to the file you want to process.
+ * It takes a directory path, reads the file, parses the CSV, and returns the records
+ * @param {string} folderPath - The path to the file you want to process.
  * @param {'factory' | 'token'} fileType - 'factory' | 'token'
  * @returns An array of objects.
  */
-async function processFile(filePath: string, fileType: 'factory' | 'token') {
+async function processFile(folderPath: string, fileType: 'factory' | 'tokens') {
     const records: any[] = [];
-    const parser = fs.createReadStream(filePath).pipe(
+    const parser = fs.createReadStream(path.join(folderPath, `${fileType}.csv`)).pipe(
         parseCsv({
             delimiter: ',',
             columns: true,
             toLine: fileType == 'factory' ? 2 : undefined, // we only read the first data row from factory.csv
-            onRecord: fileType == 'factory' ? prepareFactory : prepareTokens,
+            onRecord: fileType == 'factory' ? prepareFactory : prepareToken,
         })
     );
     for await (const record of parser) {
@@ -25,35 +25,26 @@ async function processFile(filePath: string, fileType: 'factory' | 'token') {
     return records;
 }
 
-function prepareTokens(record: any): TokenMetaData {
-    // TODO
-    // console.log('parsing token');
-    return { name: 'some-token-name' } as TokenMetaData;
-}
-
 /**
- * It takes a record from the CSV file and transforms it into a FactoryMetaData object
- * @param {any} record - the row of the CSV file
- * @returns An array of objects, each object is a factory
+ * It takes a record from the CSV file and transforms it into a Metadata object
+ * @param {any} record - The record object that is passed to the function.
+ * @returns An object of type Metadata
  */
-function prepareFactory(record: any): FactoryMetaData {
-    // console.log('parsing factory');
-    // console.log(record);
-
-    let factory = {} as FactoryMetaData;
-    factory.specVersion = record['specVersion'];
-    factory.type = record['type'];
-    factory.name = record['name'];
-    factory.subName = record['subName'];
-    factory.description = record['description'];
-    factory.author = record['author'];
-    factory.defaultLocale = record['defaultLocale'];
+function prepareMetadata(record: any): Metadata {
+    let metadata = {} as Metadata;
+    metadata.specVersion = record['specVersion'];
+    metadata.type = record['type'];
+    metadata.name = record['name'];
+    metadata.subName = record['subName'];
+    metadata.description = record['description'];
+    metadata.author = record['author'];
+    metadata.defaultLocale = record['defaultLocale'];
 
     // TODO:
     // Hash generation is to be done in a future ticket: https://ultraio.atlassian.net/browse/BLOCK-927
     // Schema validation might fail without a hash though(?)
     // Parsing -> Hashing -> Validation instead of Parsing -> Validation -> Hashing
-    factory.media = {
+    metadata.media = {
         product: {
             contentType: '',
             integrity: {
@@ -73,7 +64,7 @@ function prepareFactory(record: any): FactoryMetaData {
     };
 
     if (record['hero']) {
-        factory.media.hero = {
+        metadata.media.hero = {
             contentType: '',
             integrity: {
                 hash: '',
@@ -83,7 +74,7 @@ function prepareFactory(record: any): FactoryMetaData {
         };
     }
 
-    factory.media.gallery = [
+    metadata.media.gallery = [
         record['gallery 1'],
         record['gallery 2'],
         record['gallery 3'],
@@ -111,6 +102,21 @@ function prepareFactory(record: any): FactoryMetaData {
         return result;
     }, []);
 
+    return metadata;
+}
+
+/**
+ * It takes a record from the CSV file and transforms it into a FactoryMetaData object
+ * @param {any} record - the row of the CSV file
+ * @returns An object of type FactoryMetaData
+ */
+function prepareFactory(record: any): FactoryMetaData {
+    console.log('parsing factory');
+    console.log(record);
+    let factory: FactoryMetaData = prepareMetadata(record);
+
+    // parse/process/add any FactoryMetadata specific properties here
+
     const tempAttributeList = [
         [record['Att Type 1'], record['Att Name 1'], record['Att Desc 1']],
         [record['Att Type 2'], record['Att Name 2'], record['Att Desc 2']],
@@ -127,7 +133,7 @@ function prepareFactory(record: any): FactoryMetaData {
     ]
         .filter((attribute) => {
             // to get rid of empty/null values
-            return Boolean(attribute[0]);
+            return Boolean(attribute[1]);
         })
         .map((attribute) => {
             return {
@@ -142,7 +148,50 @@ function prepareFactory(record: any): FactoryMetaData {
     if (tempAttributeList.length) {
         factory.attributes = Object.assign({}, ...tempAttributeList);
     }
+
     return factory;
+}
+
+/**
+ * It takes a record from the CSV file, and returns a TokenMetaData object
+ * @param {any} record - any - this is the record that was parsed from the CSV file.
+ * @returns  An object of type TokenMetaData
+ */
+function prepareToken(record: any): TokenMetaData {
+    console.log('parsing token');
+    console.log(record);
+    let token: TokenMetaData = prepareMetadata(record);
+
+    // parse/process/add any TokenMetaData specific properties here
+    const tempAttributeList = [
+        [record['Att Name 1'], record['Att Val 1']],
+        [record['Att Name 2'], record['Att Val 2']],
+        [record['Att Name 3'], record['Att Val 3']],
+        [record['Att Name 4'], record['Att Val 4']],
+        [record['Att Name 5'], record['Att Val 5']],
+        [record['Att Name 6'], record['Att Val 6']],
+        [record['Att Name 7'], record['Att Val 7']],
+        [record['Att Name 8'], record['Att Val 8']],
+        [record['Att Name 9'], record['Att Val 9']],
+        [record['Att Name 10'], record['Att Val 10']],
+        [record['Att Name 11'], record['Att Val 12']],
+        [record['Att Name 11'], record['Att Val 12']],
+    ]
+        .filter((attribute) => {
+            // to get rid of empty/null values
+            return Boolean(attribute[0]);
+        })
+        .map((attribute) => {
+            return {
+                [attribute[0]]: attribute[1],
+            };
+        });
+
+    if (tempAttributeList.length) {
+        token.attributes = Object.assign({}, ...tempAttributeList);
+    }
+
+    return token;
 }
 
 /**
@@ -153,17 +202,13 @@ function prepareFactory(record: any): FactoryMetaData {
  *     defaultToken: TokenMetaData,
  *     tokens: TokenMetaData[]`
  */
-async function parse(folderPath: string) {
-    const factory: FactoryMetaData[] = await processFile(path.join(folderPath, 'factory.csv'), 'factory');
-    const tokens: TokenMetaData[] = await processFile(path.join(folderPath, 'tokens.csv'), 'token');
-
-    // console.log(factory);
-    // console.log(tokens);
-    // console.log(JSON.stringify(factory));
+async function parse(folderPath: string): Promise<NFTData> {
+    const factory: FactoryMetaData[] = await processFile(folderPath, 'factory');
+    const tokens: TokenMetaData[] = await processFile(folderPath, 'tokens');
 
     return {
         factory: factory[0],
-        defaultToken: tokens[0],
+        defaultToken: tokens.shift(), // assuming that first element is always the default token. Better way to handle this is tokens.filter(t => { t.serialNum === 'default'}). But we need to update the Schema to include serialNum
         tokens,
     };
 }
