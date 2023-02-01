@@ -154,8 +154,6 @@ export class CSVParser {
      * @returns  An object of type TokenMetaData
      */
     private prepareToken = (record: any): TokenMetaData => {
-        console.log('parsing token');
-        console.log(record);
         let token: TokenMetaData = { serialNumber: record['serialNumber'], ...this.prepareMetadata(record) };
 
         // parse/process/add any TokenMetaData specific properties here
