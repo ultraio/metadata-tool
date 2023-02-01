@@ -5,18 +5,23 @@ import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
-import { SchemaValidator } from './utils/schemaValidator';
+import { ErrorGenerator } from './utils/errorGenerator';
+import { ReportGenerator } from './utils/reportGenerator';
+import { ExitHandlers } from './utils/exitHandlers';
 
 const glob = promisify(globMod);
 
 const main = async () => {
+    ExitHandlers.init();
+
     const config: Config = {};
     let fileType: 'csv' | 'json' = 'csv';
     let folderPath = process.argv[2]; // path is passed as cli argument or dragged-dropped into the binary
 
     // validate folder path
     if (!fs.existsSync(folderPath)) {
-        console.log(`Directory ${folderPath} does not exist!. Please provide a valid directory.`);
+        const errorMessage = ErrorGenerator.get('INVALID_DIRECTORY', folderPath);
+        ReportGenerator.add(errorMessage);
 
         ({ folderPath } = await inquirer.prompt([
             {
@@ -24,15 +29,13 @@ const main = async () => {
                 name: 'folderPath',
                 message: 'Enter directory path: ',
                 validate(answer) {
-                    return fs.existsSync(answer)
-                        ? true
-                        : `Directory ${answer} does not exist!. Please provide a valid directory.`;
+                    return fs.existsSync(answer) ? true : ErrorGenerator.get('INVALID_DIRECTORY', answer);
                 },
             },
         ]));
     }
 
-    console.log(`Processing directory: ${folderPath}`);
+    ReportGenerator.add(`Processing directory: ${folderPath}`);
 
     // Check what file type to process; either csv or json
     const allFiles = (
@@ -71,15 +74,15 @@ const main = async () => {
     // check if required files are present
     const files = fileType == 'csv' ? csvFiles : jsonFiles;
     if (!(files.includes(`factory.${fileType}`) && files.includes(`defaultToken.${fileType}`))) {
-        await promptUser(
-            `Required factory.${fileType} and/or defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
-        );
+        const errorMessage = ErrorGenerator.get('MISSING_FACTORY_FILES', fileType, fileType);
+        ReportGenerator.add(errorMessage);
+        await promptUser(errorMessage);
         return;
     }
 
     // notify if tokens file is present
     if (files.includes(`tokens.${fileType}`)) {
-        console.log(`tokens.${fileType} file was also found in the provided directory.`);
+        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`);
     }
 
     // Input collection name and environment for urls
@@ -101,7 +104,7 @@ const main = async () => {
                 return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
             },
             validate(answer) {
-                return isValidUrl(answer) ? true : 'Please input a valid URL';
+                return isValidUrl(answer) ? true : ErrorGenerator.get('INVALID_URL');
             },
         },
     ]);

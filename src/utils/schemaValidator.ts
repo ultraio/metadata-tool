@@ -2,6 +2,7 @@ import ajv from 'ajv';
 
 import { FactorySchema } from '../schemas/factory';
 import { TokenSchema } from '../schemas/token';
+import { ReportGenerator } from './reportGenerator';
 
 const ajvInstance = new ajv();
 const SchemaBindings = {
@@ -35,8 +36,10 @@ function validate(type: keyof typeof SchemaBindings, data: Object | string, hide
     const validator = ajvInstance.compile(SchemaBindings[type]);
     const isValid = validator(data);
 
-    if (!isValid && !hideErrors) {
-        console.log(validator.errors);
+    if (!isValid && !hideErrors && validator.errors) {
+        for (let i = 0; i < validator.errors?.length; i++) {
+            ReportGenerator.add(JSON.stringify(validator.errors[i]));
+        }
     }
 
     return isValid;
