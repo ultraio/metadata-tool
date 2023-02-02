@@ -31,6 +31,7 @@
         "metadataTool": "./bin/index.js"
     },
     "dependencies": {
+        "csv-parse": "^5.3.4",
         "glob": "^8.0.3",
         "inquirer": "^8.2.5"
     },

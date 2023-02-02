@@ -1,10 +1,11 @@
 import { glob as globMod } from 'glob';
 import inquirer from 'inquirer';
-import { promptUser, isValidUrl } from './utils';
+import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
+import { NFTData } from 'types';
 const glob = promisify(globMod);
 
 const main = async () => {
@@ -34,7 +35,7 @@ const main = async () => {
 
     // Check what file type to process; either csv or json
     const allFiles = (
-        await glob(path.join(folderPath, `+(factory.+(json|csv)|defaultToken.+(json|csv)|tokens.+(json|csv))`), {
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json)`), {
             windowsPathsNoEscape: true,
         })
     ).map((f) => {
@@ -66,23 +67,27 @@ const main = async () => {
     }
     // else, default fileType is csv
 
-    // check if required files are present
+    // check if factory.json|csv is present
     const files = fileType == 'csv' ? csvFiles : jsonFiles;
-    if (!(files.includes(`factory.${fileType}`) && files.includes(`defaultToken.${fileType}`))) {
+    if (!files.includes(`factory.${fileType}`)) {
         await promptUser(
-            `Required factory.${fileType} and/or defaultToken.${fileType} files not found. Please make sure the files exists in the provided directory!`
+            `Required factory.${fileType} file not found. Please make sure the file exists in the provided directory!`
         );
         return;
     }
 
-    // notify if tokens file is present
-    if (files.includes(`tokens.${fileType}`)) {
-        console.log(`tokens.${fileType} file was also found in the provided directory.`);
+    // if processing json files, check if defaultToken.json is present
+    if (fileType == 'json' && !files.includes(`defaultToken.json`)) {
+        await promptUser(
+            `Required defaultToken.json file not found. Please make sure the file exists in the provided directory!`
+        );
+        return;
     }
 
-    // Input collection name and environment for urls
-    const { answer: collectionName } = await promptUser('Enter collection name:');
-    config.collectionName = collectionName;
+    // if processing csv files, notify if tokens file is present
+    if (fileType == 'csv' && files.includes(`tokens.${fileType}`)) {
+        console.log(`tokens.csv file was also found in the provided directory.`);
+    }
 
     const { envType, customUrl } = await inquirer.prompt([
         {
@@ -109,6 +114,17 @@ const main = async () => {
         setCustomEnvUrl(customUrl);
     }
 
+    // File parsing and processing
+
+    // use csv or json parser, depending on the fileType
+    let nftData =
+        fileType == 'csv' ? await new CSVParser().parse(folderPath) : await new JSONParser().parse(folderPath);
+
+    // collection name is read from factory.csv/factory.json
+    config.collectionName = nftData.factory.name;
+
+    console.log(JSON.stringify(nftData, null, 2));
+
     // remove later - debugging only
     console.log(
         `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
@@ -116,7 +132,11 @@ const main = async () => {
         )}`
     );
 
-    // TODO:  future tickets: process files here
+    // TODO: Validate
+    // validator.validate(jsonData.factory)
+    // validator.validate(jsonData.tokens)
+    // ......
+
     await promptUser('Finished processing..');
 };
 
