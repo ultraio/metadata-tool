@@ -4,7 +4,7 @@ import { FactorySchema } from '../schemas/factory';
 import { TokenSchema } from '../schemas/token';
 import { ReportGenerator } from './reportGenerator';
 
-const ajvInstance = new ajv();
+const ajvInstance = new ajv({ allowUnionTypes: true });
 const SchemaBindings = {
     factory: FactorySchema,
     token: TokenSchema,
@@ -38,6 +38,8 @@ function validate(type: keyof typeof SchemaBindings, data: Object | string, hide
 
     if (!isValid && !hideErrors && validator.errors) {
         for (let i = 0; i < validator.errors?.length; i++) {
+            // ! - Errors are a bit vague sometimes; might need some training to read.
+            // ! - Unless we decide to parse them further and provide simple responses.
             ReportGenerator.add(JSON.stringify(validator.errors[i]));
         }
     }

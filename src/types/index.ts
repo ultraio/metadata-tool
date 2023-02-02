@@ -9,7 +9,7 @@ export interface StaticResource {
     integrity: {
         type: 'SHA256';
         hash: string;
-    };
+    } | null;
 }
 
 /**

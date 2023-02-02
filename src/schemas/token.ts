@@ -3,6 +3,11 @@ export const TokenSchema = {
     title: 'TokenMetadata',
     description: 'The NFT metadata',
     properties: {
+        serialNumber: {
+            type: ['string', 'number'],
+            description: 'A serial identifier of this token',
+            nullable: true,
+        },
         specVersion: {
             type: 'string',
             description:
@@ -112,9 +117,10 @@ export const TokenSchema = {
                     },
                     required: ['type', 'hash'],
                     additionalProperties: false,
+                    nullable: true,
                 },
             },
-            required: ['contentType', 'uris', 'integrity'],
+            required: ['contentType', 'uris'],
             additionalProperties: false,
         },
         dynamicResource: {

@@ -34,7 +34,9 @@ export const ReportGenerator = {
          * Print all messages to file.
          */
         toFile() {
-            console.log('> Generating report...');
+            if (messages.length <= 0) {
+                return;
+            }
 
             const filePath = path.join(process.cwd(), '/', REPORT_NAME).replace(/\\/gm, '/');
             if (fs.existsSync(filePath)) {
@@ -45,6 +47,8 @@ export const ReportGenerator = {
                 const timeString = new Date(messages[i].time).toISOString().slice(11, 19);
                 fs.appendFileSync(filePath, `[${timeString}] ${messages[i].message}\r\n`);
             }
+
+            console.log(`> Generated Report @ ${filePath}`);
         },
     },
 };

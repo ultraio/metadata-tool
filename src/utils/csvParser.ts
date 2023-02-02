@@ -2,37 +2,37 @@ import fs from 'fs';
 import path from 'path';
 import { parse as parseCsv } from 'csv-parse';
 import { FactoryMetaData, Metadata, NFTData, StaticResource, TokenMetaData } from 'types';
-import { Config, getEnvironmentUrl } from 'config';
 
-export class CSVParser {
+const Internal = {
     /**
      * It takes a directory path, reads the file, parses the CSV, and returns the records
      * @param {string} folderPath - The path to the file you want to process.
      * @param {'factory' | 'token'} fileType - `factory` | `tokens`
      * @returns An array of objects.
      */
-    private processFile = async (folderPath: string, fileType: 'factory' | 'tokens') => {
+    async processFile(folderPath: string, fileType: 'factory' | 'tokens') {
         const records: any[] = [];
         const parser = fs.createReadStream(path.join(folderPath, `${fileType}.csv`)).pipe(
             parseCsv({
                 delimiter: ',',
                 columns: true,
                 toLine: fileType == 'factory' ? 2 : undefined, // we only read the first data row from factory.csv
-                onRecord: fileType == 'factory' ? this.prepareFactory : this.prepareToken,
+                onRecord: fileType == 'factory' ? Internal.prepareFactory : Internal.prepareToken,
             })
         );
+
         for await (const record of parser) {
             records.push(record);
         }
-        return records;
-    };
 
+        return records;
+    },
     /**
      * It takes a record from the CSV file and transforms it into a Metadata object
      * @param {any} record - The record object that is passed to the function.
      * @returns An object of type Metadata
      */
-    private prepareMetadata = (record: any): Metadata => {
+    prepareMetadata(record: any): Metadata {
         let metadata = {} as Metadata;
         metadata.specVersion = record['specVersion'];
         metadata.type = record['type'];
@@ -45,18 +45,12 @@ export class CSVParser {
         metadata.media = {
             product: {
                 contentType: '',
-                integrity: {
-                    hash: '',
-                    type: 'SHA256',
-                },
+                integrity: null,
                 uris: [record['product']],
             },
             square: {
                 contentType: '',
-                integrity: {
-                    hash: '',
-                    type: 'SHA256',
-                },
+                integrity: null,
                 uris: [record['square']],
             },
         };
@@ -64,10 +58,7 @@ export class CSVParser {
         if (record['hero']) {
             metadata.media.hero = {
                 contentType: '',
-                integrity: {
-                    hash: '',
-                    type: 'SHA256',
-                },
+                integrity: null,
                 uris: [record['hero']],
             };
         }
@@ -90,10 +81,7 @@ export class CSVParser {
             if (element) {
                 result.push({
                     contentType: '',
-                    integrity: {
-                        hash: '',
-                        type: 'SHA256',
-                    },
+                    integrity: null,
                     uris: [element],
                 });
             }
@@ -101,15 +89,14 @@ export class CSVParser {
         }, []);
 
         return metadata;
-    };
-
+    },
     /**
      * It takes a record from the CSV file and transforms it into a FactoryMetaData object
      * @param {any} record - the row of the CSV file
      * @returns An object of type FactoryMetaData
      */
-    private prepareFactory = (record: any): FactoryMetaData => {
-        let factory: FactoryMetaData = this.prepareMetadata(record);
+    prepareFactory(record: any): FactoryMetaData {
+        let factory: FactoryMetaData = Internal.prepareMetadata(record);
 
         // parse/process/add any FactoryMetadata specific properties here
 
@@ -146,15 +133,14 @@ export class CSVParser {
         }
 
         return factory;
-    };
-
+    },
     /**
      * It takes a record from the CSV file, and returns a TokenMetaData object
      * @param {any} record - any - this is the record that was parsed from the CSV file.
      * @returns  An object of type TokenMetaData
      */
-    private prepareToken = (record: any): TokenMetaData => {
-        let token: TokenMetaData = { serialNumber: record['serialNumber'], ...this.prepareMetadata(record) };
+    prepareToken(record: any): TokenMetaData {
+        let token: TokenMetaData = { serialNumber: record['serialNumber'], ...Internal.prepareMetadata(record) };
 
         // parse/process/add any TokenMetaData specific properties here
         const tempAttributeList = [
@@ -186,16 +172,18 @@ export class CSVParser {
         }
 
         return token;
-    };
+    },
+};
 
+export const CSVParser = {
     /**
      * It reads the factory and tokens CSV files, and returns an object with the factory and tokens data
      * @param {string} folderPath - The path to the folder containing the factory.csv and tokens.csv files.
      * @returns An object of type NFTData
      */
     async parse(folderPath: string): Promise<NFTData> {
-        const factory: FactoryMetaData[] = await this.processFile(folderPath, 'factory');
-        const tokens: TokenMetaData[] = await this.processFile(folderPath, 'tokens');
+        const factory: FactoryMetaData[] = await Internal.processFile(folderPath, 'factory');
+        const tokens: TokenMetaData[] = await Internal.processFile(folderPath, 'tokens');
         const defaultTokenIndex = tokens.findIndex((x) => x.serialNumber === 'default');
 
         return {
@@ -203,5 +191,5 @@ export class CSVParser {
             defaultToken: defaultTokenIndex === -1 ? undefined : tokens.splice(defaultTokenIndex, 1)[0],
             tokens,
         };
-    }
-}
+    },
+};
