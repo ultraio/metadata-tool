@@ -2,7 +2,8 @@ const ReplaceMe = '>MISSING_ARGUMENT<';
 
 const ErrorList = {
     NO_ERROR_CODE: `Error code does not exist. ${ReplaceMe}`,
-    MISSING_FACTORY_FILES: `Required factory. ${ReplaceMe} and/or defaultToken. ${ReplaceMe} files not found. Please make sure the files exists in the provided directory!`,
+    MISSING_FACTORY_FILE: `Required file factory.${ReplaceMe} file not found. Please make sure the files exists in the provided directory!`,
+    MISSING_DEFAULT_TOKEN_FILE: `Required file defaultToken.${ReplaceMe} file not found. Please make sure the files exists in the provided directory!`,
     INVALID_DIRECTORY: `Directory ${ReplaceMe} does not exist!. Please provide a valid directory.`,
     INVALID_URL: `Url was invalid. Provide a valid url.`,
 };
