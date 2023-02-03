@@ -21,6 +21,9 @@ export const ReportGenerator = {
 
         console.log(`> ${message}`);
     },
+    get() {
+        return messages;
+    },
     print: {
         /**
          * Print all messages to the console.

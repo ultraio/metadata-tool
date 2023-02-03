@@ -1,6 +1,7 @@
 import { TokenMetaData } from '../../src/types';
 
 export const TokenMetaExample: TokenMetaData = {
+    serialNumber: 'default',
     specVersion: '0.1',
     type: 'collectible',
     defaultLocale: 'en-US',
