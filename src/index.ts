@@ -1,21 +1,32 @@
-import { glob as globMod } from 'glob';
-import inquirer from 'inquirer';
-import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
-import path from 'path';
 import fs from 'fs';
+import inquirer from 'inquirer';
+import path from 'path';
+
+import { glob as globMod } from 'glob';
+import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import { promisify } from 'util';
 import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
-import { NFTData } from 'types';
+import { ErrorGenerator } from './utils/errorGenerator';
+import { ReportGenerator } from './utils/reportGenerator';
+import { ExitHandlers } from './utils/exitHandlers';
+import { SchemaValidator } from './utils/schemaValidator';
+
 const glob = promisify(globMod);
 
 const main = async () => {
+    ReportGenerator.add('Started Program', false);
+    ExitHandlers.init();
+
     const config: Config = {};
     let fileType: 'csv' | 'json' = 'csv';
     let folderPath = process.argv[2]; // path is passed as cli argument or dragged-dropped into the binary
 
+    // STEP -> DETERMINE FOLDER WHERE FILES ARE STORED
     // validate folder path
+    ReportGenerator.add('Reading specified folder path.', false);
     if (!fs.existsSync(folderPath)) {
-        console.log(`Directory ${folderPath} does not exist!. Please provide a valid directory.`);
+        const errorMessage = ErrorGenerator.get('INVALID_DIRECTORY', folderPath);
+        ReportGenerator.add(errorMessage);
 
         ({ folderPath } = await inquirer.prompt([
             {
@@ -23,16 +34,15 @@ const main = async () => {
                 name: 'folderPath',
                 message: 'Enter directory path: ',
                 validate(answer) {
-                    return fs.existsSync(answer)
-                        ? true
-                        : `Directory ${answer} does not exist!. Please provide a valid directory.`;
+                    return fs.existsSync(answer) ? true : ErrorGenerator.get('INVALID_DIRECTORY', answer);
                 },
             },
         ]));
     }
 
-    console.log(`Processing directory: ${folderPath}`);
+    ReportGenerator.add(`Processing folder path: ${folderPath}`);
 
+    // STEP -> READ FILES IN DIRECTORY
     // Check what file type to process; either csv or json
     const allFiles = (
         await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json)`), {
@@ -67,28 +77,32 @@ const main = async () => {
     }
     // else, default fileType is csv
 
+    // STEP -> VALIDATE FILE LIST
     // check if factory.json|csv is present
-    const files = fileType == 'csv' ? csvFiles : jsonFiles;
+    ReportGenerator.add('Validating file list.', false);
+    const isCSV = fileType === 'csv';
+    const files = isCSV ? csvFiles : jsonFiles;
     if (!files.includes(`factory.${fileType}`)) {
-        await promptUser(
-            `Required factory.${fileType} file not found. Please make sure the file exists in the provided directory!`
-        );
+        const errorMessage = ErrorGenerator.get('MISSING_FACTORY_FILE', fileType);
+        ReportGenerator.add(errorMessage);
+        await promptUser(errorMessage);
         return;
     }
 
-    // if processing json files, check if defaultToken.json is present
-    if (fileType == 'json' && !files.includes(`defaultToken.json`)) {
-        await promptUser(
-            `Required defaultToken.json file not found. Please make sure the file exists in the provided directory!`
-        );
+    if (!isCSV && !files.includes(`defaultToken.json`)) {
+        const errorMessage = ErrorGenerator.get('MISSING_DEFAULT_TOKEN_FILE', '.json');
+        ReportGenerator.add(errorMessage);
+        await promptUser(errorMessage);
         return;
     }
 
     // if processing csv files, notify if tokens file is present
-    if (fileType == 'csv' && files.includes(`tokens.${fileType}`)) {
-        console.log(`tokens.csv file was also found in the provided directory.`);
+    if (isCSV && files.includes(`tokens.${fileType}`)) {
+        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`);
     }
 
+    // STEP -> ENVIRONMENT SELECTION
+    ReportGenerator.add('Prompting user for URL selection.', false);
     const { envType, customUrl } = await inquirer.prompt([
         {
             type: 'list',
@@ -104,7 +118,7 @@ const main = async () => {
                 return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
             },
             validate(answer) {
-                return isValidUrl(answer) ? true : 'Please input a valid URL';
+                return isValidUrl(answer) ? true : ErrorGenerator.get('INVALID_URL');
             },
         },
     ]);
@@ -114,30 +128,72 @@ const main = async () => {
         setCustomEnvUrl(customUrl);
     }
 
-    // File parsing and processing
-
+    // STEP -> FILE PARSING & PROCESSING / CONVERSION
     // use csv or json parser, depending on the fileType
-    let nftData =
-        fileType == 'csv' ? await new CSVParser().parse(folderPath) : await new JSONParser().parse(folderPath);
+    ReportGenerator.add(`Parsing file types for ${fileType}`, false);
+    const nftData = isCSV ? await CSVParser.parse(folderPath) : await JSONParser.parse(folderPath);
 
     // collection name is read from factory.csv/factory.json
     config.collectionName = nftData.factory.name;
 
-    console.log(JSON.stringify(nftData, null, 2));
+    ReportGenerator.add(`Validating if defaultToken was provided.`, false);
+    if (typeof nftData.defaultToken === 'undefined') {
+        const errorMessage = `defaultToken could not be processed and is missing.`;
+        ReportGenerator.add(errorMessage, false);
+        await promptUser(errorMessage);
+        process.exit(1);
+    }
 
-    // remove later - debugging only
-    console.log(
+    ReportGenerator.add(
         `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
             config.environment!
-        )}`
+        )}`,
+        false
     );
 
-    // TODO: Validate
-    // validator.validate(jsonData.factory)
-    // validator.validate(jsonData.tokens)
-    // ......
+    // STEP -> SCHEMA VALIDATION
+    ReportGenerator.add(`Validating schema files.`, false);
 
-    await promptUser('Finished processing..');
+    let allValid = true;
+
+    ReportGenerator.add(`Attempting to validate factory.`, false);
+    if (!SchemaValidator.validate('factory', nftData.factory)) {
+        ReportGenerator.add(ErrorGenerator.get('INVALID_SCHEMA_FILE', `factory.${fileType}`));
+        allValid = false;
+    } else {
+        ReportGenerator.add(`factory passed`, false);
+    }
+
+    ReportGenerator.add(`Attempting to validate defaultToken.`, false);
+    if (!SchemaValidator.validate('defaultToken', nftData.defaultToken)) {
+        ReportGenerator.add(ErrorGenerator.get('INVALID_SCHEMA_FILE', `defaultToken.${fileType}`));
+        allValid = false;
+    } else {
+        ReportGenerator.add(`defaultToken passed`, false);
+    }
+
+    ReportGenerator.add(`Attempting to validate tokens.`, false);
+    for (let i = 0; i < nftData.tokens.length; i++) {
+        if (!SchemaValidator.validate('token', nftData.tokens[i])) {
+            ReportGenerator.add(ErrorGenerator.get('INVALID_TOKEN_SCHEMA_AT', i));
+            allValid = false;
+        }
+    }
+
+    if (!allValid) {
+        const errorMessage = ErrorGenerator.get('INVALID_SCHEMAS');
+        ReportGenerator.add(errorMessage, false);
+        await promptUser(errorMessage);
+        process.exit(1);
+    } else {
+        ReportGenerator.add(`All Schemas Passed`, false);
+    }
+
+    // ! TODO - Hash Generation
+
+    const exitMessage = `Finished Processing. Press [Enter] to Exit`;
+    ReportGenerator.add(exitMessage, false);
+    await promptUser(exitMessage);
 };
 
 main();

@@ -2,9 +2,10 @@ import path from 'path';
 import { glob as globMod } from 'glob';
 import { promisify } from 'util';
 import { FactoryMetaData, NFTData, TokenMetaData } from 'types';
+
 const glob = promisify(globMod);
 
-export class JSONParser {
+export const JSONParser = {
     /**
      * It loads the `factory.json`, `defaultToken.json` and all the `*.json` files in the `/tokens` folder,
      * and returns them as a NFTData object
@@ -32,5 +33,5 @@ export class JSONParser {
             defaultToken: defaultTokenJson,
             tokens: tokensJson,
         };
-    }
-}
+    },
+};

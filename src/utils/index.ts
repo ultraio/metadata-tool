@@ -7,7 +7,7 @@ import { JSONParser } from './jsonParser';
  *
  * @export
  * @param {string} query - The question you want to ask the user.
- * @return {*}  {Promise<string>} - A promise that resolves to a string answer
+ * @return {Promise<string>} - A promise that resolves to a string answer
  */
 async function promptUser(query: string): Promise<{ answer: string }> {
     return inquirer.prompt([
