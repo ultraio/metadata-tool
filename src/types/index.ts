@@ -1,10 +1,12 @@
+import { MimeTypes } from './mimeTypes';
+
 export type Environment = 'dev' | 'prod' | 'qa' | 'staging' | 'custom';
 
 /**
  * A static resource provides a hash to check integrity
  */
 export interface StaticResource {
-    contentType: string;
+    contentType: MimeTypes | null;
     uris: string[];
     integrity: {
         type: 'SHA256';
@@ -16,7 +18,7 @@ export interface StaticResource {
  * A dynamic resource can be refreshed to discover changes
  */
 export interface DynamicResource {
-    contentType: string;
+    contentType: MimeTypes;
     uris: string[];
 }
 

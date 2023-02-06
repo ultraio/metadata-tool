@@ -190,6 +190,7 @@ const main = async () => {
     }
 
     // ! TODO - Hash Generation
+    console.log(nftData.factory.media);
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);
