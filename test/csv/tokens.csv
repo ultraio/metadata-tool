@@ -2,4 +2,4 @@ serialNumber,specVersion,name,subName,description,author,type,defaultLocale,prod
 default,0.1,Angry Banana,foo,bar,foobar,game,en-US,/some/img.png,/some/img.png,/some/img.png,/some/img.png,/some/img.png,/some/img.png,,,,,,,,,,health,1,color,1,a3,#FFFFFF,a4,,a5,,,,,,,,,,,,,,,,
 1,0.1,Angry Banana #1,banana1,bar #1,bananaAuthor,game,en-US,/some/img.png,/some/img.png,/some/img.png,/some/img.png,/some/img.png,/some/img.png,,,,,,,,,,health,2,color,3,a3,#FF0000,a4,,a5,,,,,,,,,,,,,,,,
 2,0.1,Angry Banana #2,banana2,,bananaAuthor,game,en-US,/some/img.png,/some/img.png,,,,,,,,,,,,,,health,,color,,a3,,a4,,a5,,,,,,,,,,,,,,,,
-3,0.1,Angry Banana #3,banana3,,bananaAuthor,game,en-US,/some/img.png,,,,,,,,,,,,,,,health,,color,,a3,,a4,,a5,,,,,,,,,,,,,,,,
+3,0.1,Angry Banana #3,banana3,,bananaAuthor,game,en-US,/some/img.png,/some/img.png,,,,,,,,,,,,,,health,,color,,a3,,a4,,a5,,,,,,,,,,,,,,,,
