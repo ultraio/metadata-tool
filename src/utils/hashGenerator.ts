@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import crossFetch from 'cross-fetch';
-import * as sjcl from 'sjcl';
+import fetch from 'node-fetch';
+import { createHash } from 'crypto';
 
 import { ErrorGenerator } from './errorGenerator';
 import { ReportGenerator } from './reportGenerator';
@@ -29,66 +29,67 @@ const Internal = {
      * Get external file content as an array buffer.
      *
      * @param {string} url
-     * @return {(Promise<ArrayBuffer | undefined>)}
+     * @return {(Promise<string | undefined>)}
      */
-    async getExternalFileContent(url: string): Promise<ArrayBuffer | undefined> {
-        const response = await crossFetch(url);
+    async getExternalFileContent(url: string): Promise<string | undefined> {
+        const response = await fetch(url);
         if (!response.ok) {
             return undefined;
         }
 
-        return await response.arrayBuffer();
+        const hash = createHash('sha256', { encoding: 'hex' });
+        response.body.pipe(hash);
+
+        await new Promise((resolve: Function) => {
+            response.body.on('end', () => {
+                resolve();
+            });
+        });
+
+        return hash.read();
     },
     /**
      * Get the current file content of a given file based on a relative path and working directory.
      *
      * @param {string} filePath
      * @param {string} workingDirectory
-     * @return {(ArrayBuffer | undefined)}
+     * @return {(Buffer | undefined)}
      */
-    getFileContent(filePath: string, workingDirectory: string): ArrayBuffer | undefined {
+    async getFileContent(filePath: string, workingDirectory: string): Promise<string | undefined> {
         const fullPath = path.join(workingDirectory, filePath).replace(/\\/gm, '/');
         if (!fs.existsSync(fullPath)) {
             return undefined;
         }
 
-        const data = Buffer.from(fs.readFileSync(fullPath));
-        return data;
+        const stream = fs.createReadStream(fullPath);
+        const hash = createHash('sha256', { encoding: 'hex' });
+        stream.pipe(hash);
+
+        await new Promise((resolve: Function) => {
+            stream.on('end', () => {
+                resolve();
+            });
+        });
+
+        return hash.read();
     },
 };
 
 export const HashGenerator = {
-    /**
-     * Hash a string of data into a persistent SHA256 hash.
-     *
-     * @param  {string} data
-     * @returns {string}
-     */
-    sha256(data: string): string {
-        const hashBits = sjcl.hash.sha256.hash(data);
-        return sjcl.codec.hex.fromBits(hashBits);
-    },
-    /**
-     * Obtain a hash for given file contents.
-     *
-     * @param {string} urlOrPath
-     * @return {(Promise<string | undefined>)}
-     */
     async get(urlOrPath: string, workingDirectory): Promise<string | undefined> {
-        let data: ArrayBuffer | undefined;
+        let result: string | undefined;
 
         if (Internal.isValidUrl(urlOrPath)) {
-            data = await Internal.getExternalFileContent(urlOrPath);
+            result = await Internal.getExternalFileContent(urlOrPath);
         } else {
-            data = Internal.getFileContent(urlOrPath, workingDirectory);
+            result = await Internal.getFileContent(urlOrPath, workingDirectory);
         }
 
-        if (typeof data === 'undefined') {
+        if (typeof result === 'undefined') {
             ReportGenerator.add(ErrorGenerator.get('UNREACHABLE_FILE', urlOrPath));
             return undefined;
         }
 
-        const hexBufferAsString = Buffer.from(data).toString('hex');
-        return HashGenerator.sha256(hexBufferAsString);
+        return result;
     },
 };
