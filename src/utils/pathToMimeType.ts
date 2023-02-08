@@ -15,6 +15,7 @@ const DataBindings: { [key: string]: MimeTypes } = {
     // video formats
     '.avi': 'video/x-msvideo',
     '.webm': 'video/webm',
+    '.mp4': 'video/mp4',
 };
 
 export function pathToMimeType(path: string): MimeTypes | null {
