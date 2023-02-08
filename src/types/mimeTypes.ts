@@ -10,6 +10,7 @@ export const ValidMimeTypes = [
     // Video
     'video/webm',
     'video/x-msvideo',
+    'video/mp4',
 ] as const;
 
 export type MimeTypes = typeof ValidMimeTypes[number];
