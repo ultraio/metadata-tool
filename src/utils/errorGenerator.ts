@@ -9,6 +9,8 @@ const ErrorList = {
     INVALID_TOKEN_SCHEMA_AT: `Invalid token schema at index: ${ReplaceMe}`,
     INVALID_SCHEMAS: `Invalid schema(s) were found. Check the error log and correct any mistakes in the file format.`,
     INVALID_SCHEMA_FILE: `Invalid schema file for: ${ReplaceMe}`,
+    UNSUPPORTED_FILE_TYPE: `File at path '${ReplaceMe}' is not a supported file format.`,
+    UNREACHABLE_FILE: `File with URL or Path of '${ReplaceMe}' could not be reached or found.`,
 };
 
 const Internal = {

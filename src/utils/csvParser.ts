@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parse as parseCsv } from 'csv-parse';
 import { FactoryMetaData, Metadata, NFTData, StaticResource, TokenMetaData } from 'types';
+import { pathToMimeType } from './pathToMimeType';
 
 const Internal = {
     /**
@@ -44,12 +45,12 @@ const Internal = {
 
         metadata.media = {
             product: {
-                contentType: '',
+                contentType: pathToMimeType(record['product']),
                 integrity: null,
                 uris: [record['product']],
             },
             square: {
-                contentType: '',
+                contentType: pathToMimeType(record['square']),
                 integrity: null,
                 uris: [record['square']],
             },
@@ -57,7 +58,7 @@ const Internal = {
 
         if (record['hero']) {
             metadata.media.hero = {
-                contentType: '',
+                contentType: pathToMimeType(record['hero']),
                 integrity: null,
                 uris: [record['hero']],
             };
@@ -80,7 +81,7 @@ const Internal = {
             // if gallery N is not empty, i.e file path is provided, transform it to StaticResource type
             if (element) {
                 result.push({
-                    contentType: '',
+                    contentType: pathToMimeType(element),
                     integrity: null,
                     uris: [element],
                 });

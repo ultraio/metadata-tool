@@ -11,7 +11,7 @@ export const TokenMetaExample: TokenMetaData = {
     description: 'Limited Edition. First Copy of Power Suit Armour Collectible.',
     media: {
         product: {
-            contentType: 'img/png',
+            contentType: 'image/png',
             integrity: {
                 hash: 'a06f83840e3f6a31a2c6058ed47d2216958456468e221c3b9ffb435c5ec85d8d',
                 type: 'SHA256',
@@ -19,7 +19,7 @@ export const TokenMetaExample: TokenMetaData = {
             uris: ['./images/tokens/1/media.png'],
         },
         square: {
-            contentType: 'img/png',
+            contentType: 'image/png',
             integrity: {
                 hash: 'a06f83840e3f6a31a2c6058ed47d2216958456468e221c3b9ffb435c5ec85d8d',
                 type: 'SHA256',
