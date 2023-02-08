@@ -8,7 +8,7 @@ let hash2: string;
 
 describe('hash generator test', () => {
     test('should read external file and return hash', async () => {
-        const resultHash = await HashGenerator.get('https://i.imgur.com/zURagrP.jpeg', undefined);
+        const resultHash = await HashGenerator.create('https://i.imgur.com/zURagrP.jpeg', undefined);
         expect(resultHash).toBe(externalFileHash);
         if (typeof resultHash === 'string') {
             hash1 = resultHash;
@@ -16,12 +16,12 @@ describe('hash generator test', () => {
     });
 
     test('should read internal file and return hash', async () => {
-        const resultHash = await HashGenerator.get('./test/data/images/cat.jpeg', process.cwd());
+        const resultHash = await HashGenerator.create('./test/data/images/cat.jpeg', process.cwd());
         expect(resultHash).toBe(hash1);
     });
 
     test('should read external video file and return hash', async () => {
-        const resultHash = await HashGenerator.get('https://zippy.gfycat.com/BlaringFaithfulFulmar.mp4', undefined);
+        const resultHash = await HashGenerator.create('https://zippy.gfycat.com/BlaringFaithfulFulmar.mp4', undefined);
         expect(resultHash).toBe(externalVideoFileHash);
 
         if (typeof resultHash === 'string') {
@@ -30,7 +30,7 @@ describe('hash generator test', () => {
     });
 
     test('should read internal video file and return hash', async () => {
-        const resultHash = await HashGenerator.get('./test/data/images/cat-typing.mp4', process.cwd());
+        const resultHash = await HashGenerator.create('./test/data/images/cat-typing.mp4', process.cwd());
         expect(resultHash).toBe(hash2);
     });
 });

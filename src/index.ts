@@ -10,6 +10,7 @@ import { ErrorGenerator } from './utils/errorGenerator';
 import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
 import { SchemaValidator } from './utils/schemaValidator';
+import { buildHashes } from './utils/integrityBuilder';
 
 const glob = promisify(globMod);
 
@@ -190,7 +191,8 @@ const main = async () => {
     }
 
     // ! TODO - Hash Generation
-    console.log(nftData.factory.media);
+    const hashesNftData = await buildHashes(nftData, folderPath);
+    console.log(JSON.stringify(hashesNftData, null, 2));
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);

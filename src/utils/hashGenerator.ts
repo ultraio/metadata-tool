@@ -76,7 +76,7 @@ const Internal = {
 };
 
 export const HashGenerator = {
-    async get(urlOrPath: string, workingDirectory): Promise<string | undefined> {
+    async create(urlOrPath: string, workingDirectory): Promise<string | undefined> {
         let result: string | undefined;
 
         if (Internal.isValidUrl(urlOrPath)) {
@@ -91,5 +91,8 @@ export const HashGenerator = {
         }
 
         return result;
+    },
+    fromString(data: string): string {
+        return createHash('sha256', { encoding: 'hex' }).update(data).digest('hex');
     },
 };
