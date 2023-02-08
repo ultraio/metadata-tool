@@ -190,7 +190,6 @@ const main = async () => {
         ReportGenerator.add(`All Schemas Passed`, false);
     }
 
-    // ! TODO - Hash Generation
     const hashesNftData = await buildHashes(nftData, folderPath);
     console.log(JSON.stringify(hashesNftData, null, 2));
 
