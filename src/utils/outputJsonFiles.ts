@@ -21,14 +21,9 @@ function normalizeUrl(url: string) {
  * @return {Promise<FileHashes>}
  */
 export async function outputJsonFiles(data: NFTData, workingDirectory: string): Promise<FileHashes> {
-    const outputPath = normalizeUrl(path.join(workingDirectory, '/output'));
-    if (!fs.existsSync(outputPath)) {
-        fs.mkdirSync(outputPath);
-    }
-
     const paths = {
-        defaultToken: normalizeUrl(path.join(workingDirectory, '/output/defaultToken.json')),
-        factory: normalizeUrl(path.join(workingDirectory, '/output/factory.json')),
+        defaultToken: normalizeUrl(path.join(workingDirectory, '/defaultToken.json')),
+        factory: normalizeUrl(path.join(workingDirectory, '/factory.json')),
     };
 
     ReportGenerator.add(`Writing defaultToken.json to file.`);
@@ -52,9 +47,9 @@ export async function outputJsonFiles(data: NFTData, workingDirectory: string): 
     const tokens: Array<SerialHash> = [];
 
     for (let token of data.tokens) {
-        const tokenPath = normalizeUrl(path.join(workingDirectory, `/output/${token.serialNumber}.json`));
+        const tokenPath = normalizeUrl(path.join(workingDirectory, `/${token.serialNumber}.token.json`));
 
-        ReportGenerator.add(`Writing ${token.serialNumber}.json to file.`);
+        ReportGenerator.add(`Writing ${token.serialNumber}.token.json to file.`);
         fs.writeFileSync(tokenPath, JSON.stringify(token, null, 2));
 
         const tokenHash = await HashGenerator.create(tokenPath);

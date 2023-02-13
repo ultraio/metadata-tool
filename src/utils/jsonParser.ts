@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { glob as globMod } from 'glob';
 import { promisify } from 'util';
 import { FactoryMetaData, NFTData, TokenMetaData } from 'types';
@@ -14,24 +15,27 @@ export const JSONParser = {
      */
     async parse(folderPath: string): Promise<NFTData> {
         // Load factory.json
-        const factoryJson = require(path.join(folderPath, 'factory.json')) as FactoryMetaData;
+        const factoryJson = fs.readFileSync(path.join(folderPath, 'factory.json'), { encoding: 'utf-8' });
+        const factory = JSON.parse(factoryJson) as FactoryMetaData;
 
         // Load defaultToken.json
-        const defaultTokenJson = require(path.join(folderPath, 'defaultToken.json')) as TokenMetaData;
+        const defaultTokenJson = fs.readFileSync(path.join(folderPath, 'defaultToken.json'), { encoding: 'utf-8' });
+        const defaultToken = JSON.parse(defaultTokenJson) as TokenMetaData;
 
-        // Load specific token files (/tokens/1.json, /tokens/2.json, /tokens/<hash>.json etc)
-        const tokensJson = (
-            await glob(path.join(folderPath, 'tokens', `*.json`), {
-                windowsPathsNoEscape: true,
-            })
-        ).map((f) => {
-            return require(f) as TokenMetaData;
-        });
+        // Load tokens 'x.token.json'
+        let tokens: Array<TokenMetaData> = [];
+
+        const files = await glob(path.join(folderPath, `*.token.json`));
+        for (let filePath of files) {
+            const tokenJson = fs.readFileSync(filePath, { encoding: 'utf-8' });
+            const token = JSON.parse(tokenJson) as TokenMetaData;
+            tokens.push(token);
+        }
 
         return {
-            factory: factoryJson,
-            defaultToken: defaultTokenJson,
-            tokens: tokensJson,
+            factory,
+            defaultToken,
+            tokens,
         };
     },
 };

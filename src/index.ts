@@ -13,7 +13,6 @@ import { SchemaValidator } from './utils/schemaValidator';
 import { buildHashes } from './utils/integrityBuilder';
 import { replaceUrls } from './utils/urlReplace';
 import { NFTData } from './types';
-import { UrlMapper } from './utils/urlMapper';
 import { outputJsonFiles } from './utils/outputJsonFiles';
 
 const glob = promisify(globMod);
@@ -50,7 +49,7 @@ const main = async () => {
     // STEP -> READ FILES IN DIRECTORY
     // Check what file type to process; either csv or json
     const allFiles = (
-        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json)`), {
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json||*.token.+(json))`), {
             windowsPathsNoEscape: true,
         })
     ).map((f) => {
@@ -103,7 +102,7 @@ const main = async () => {
 
     // if processing csv files, notify if tokens file is present
     if (isCSV && files.includes(`tokens.${fileType}`)) {
-        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`);
+        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`, true);
     }
 
     // STEP -> ENVIRONMENT SELECTION
@@ -183,6 +182,8 @@ const main = async () => {
     }
 
     ReportGenerator.add(`Attempting to validate tokens.`, false);
+    // console.log(JSON.stringify(nftData.tokens, null, '\t'));
+
     for (let i = 0; i < nftData.tokens.length; i++) {
         if (!SchemaValidator.validate('token', nftData.tokens[i])) {
             ReportGenerator.add(ErrorGenerator.get('INVALID_TOKEN_SCHEMA_AT', i));
@@ -212,9 +213,9 @@ const main = async () => {
 
     const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
 
-    console.log(JSON.stringify(updatedUrlsNftData, null, 2));
-    console.log(UrlMapper.get());
-    console.log(fileHashData);
+    // console.log(JSON.stringify(updatedUrlsNftData, null, 2));
+    // console.log(UrlMapper.get());
+    // console.log(fileHashData);
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);
