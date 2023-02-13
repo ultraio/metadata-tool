@@ -11,6 +11,9 @@ import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
 import { SchemaValidator } from './utils/schemaValidator';
 import { buildHashes } from './utils/integrityBuilder';
+import { replaceUrls } from './utils/urlReplace';
+import { NFTData } from './types';
+import { UrlMapper } from './utils/urlMapper';
 
 const glob = promisify(globMod);
 
@@ -129,6 +132,11 @@ const main = async () => {
         setCustomEnvUrl(customUrl);
     }
 
+    if (typeof config.environment === 'undefined') {
+        ReportGenerator.add(`Failed to specify an environment. Exiting process.`, true);
+        return process.exit(1);
+    }
+
     // STEP -> FILE PARSING & PROCESSING / CONVERSION
     // use csv or json parser, depending on the fileType
     ReportGenerator.add(`Parsing file types for ${fileType}`, false);
@@ -190,8 +198,19 @@ const main = async () => {
         ReportGenerator.add(`All Schemas Passed`, false);
     }
 
-    const hashesNftData = await buildHashes(nftData, folderPath);
-    console.log(JSON.stringify(hashesNftData, null, 2));
+    ReportGenerator.add(`Building Hashes`, false);
+    const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
+
+    ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
+    const updatedUrlsNftData = await replaceUrls<NFTData>(
+        hashesNftData,
+        folderPath,
+        config.collectionName,
+        getEnvironmentUrl(config?.environment)
+    );
+
+    console.log(JSON.stringify(updatedUrlsNftData, null, 2));
+    console.log(UrlMapper.get());
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);
