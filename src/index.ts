@@ -14,6 +14,7 @@ import { buildHashes } from './utils/integrityBuilder';
 import { replaceUrls } from './utils/urlReplace';
 import { NFTData } from './types';
 import { UrlMapper } from './utils/urlMapper';
+import { outputJsonFiles } from './utils/outputJsonFiles';
 
 const glob = promisify(globMod);
 
@@ -209,8 +210,11 @@ const main = async () => {
         getEnvironmentUrl(config?.environment)
     );
 
+    const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
+
     console.log(JSON.stringify(updatedUrlsNftData, null, 2));
     console.log(UrlMapper.get());
+    console.log(fileHashData);
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);

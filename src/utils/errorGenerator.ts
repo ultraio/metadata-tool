@@ -11,6 +11,7 @@ const ErrorList = {
     INVALID_SCHEMA_FILE: `Invalid schema file for: ${ReplaceMe}`,
     UNSUPPORTED_FILE_TYPE: `File at path '${ReplaceMe}' is not a supported file format.`,
     UNREACHABLE_FILE: `File with URL or Path of '${ReplaceMe}' could not be reached or found.`,
+    HASH_FOR_FILE_FAILED: `Hash for file ${ReplaceMe} because the file was not found.`,
 };
 
 const Internal = {

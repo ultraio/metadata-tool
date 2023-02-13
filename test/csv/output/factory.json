@@ -1,0 +1,190 @@
+{
+  "specVersion": "1.0",
+  "type": "game",
+  "name": "Angry Bananas",
+  "subName": "Angreh Bananas",
+  "description": "group of very angry bananas",
+  "author": "banana studios",
+  "defaultLocale": "en-US",
+  "media": {
+    "product": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "square": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "hero": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "gallery": [
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png"
+        ]
+      }
+    ]
+  },
+  "attributes": {
+    "health": {
+      "name": "health",
+      "type": "number",
+      "description": "desc 1"
+    },
+    "color": {
+      "name": "color",
+      "type": "string",
+      "description": "desc 2"
+    },
+    "a3": {
+      "name": "a3",
+      "type": "boolean",
+      "description": "desc 3"
+    },
+    "a4": {
+      "name": "a4",
+      "type": "number",
+      "description": "desc4"
+    },
+    "a5": {
+      "name": "a5",
+      "type": "number",
+      "description": "desc5"
+    }
+  }
+}

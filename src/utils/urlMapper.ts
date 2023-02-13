@@ -1,4 +1,6 @@
-const UrlMap: { [relativePath: string]: string } = {};
+import { UrlMap } from 'types/uploadOutput';
+
+const MappedUrls: UrlMap = {};
 
 export const UrlMapper = {
     /**
@@ -8,7 +10,7 @@ export const UrlMapper = {
      * @param {string} url
      */
     set(relativePath: string, url: string) {
-        UrlMap[relativePath] = url;
+        MappedUrls[relativePath] = url;
     },
     /**
      * Get the current URL mappings for upload.
@@ -16,6 +18,6 @@ export const UrlMapper = {
      * @return {*}
      */
     get() {
-        return UrlMap;
+        return MappedUrls;
     },
 };
