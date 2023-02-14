@@ -55,8 +55,15 @@ const Internal = {
      * @param {string} workingDirectory
      * @return {(Buffer | undefined)}
      */
-    async getFileContent(filePath: string, workingDirectory: string): Promise<string | undefined> {
-        const fullPath = path.join(workingDirectory, filePath).replace(/\\/gm, '/');
+    async getFileContent(
+        filePath: string,
+        workingDirectory: string | undefined = undefined
+    ): Promise<string | undefined> {
+        let fullPath = filePath;
+        if (typeof workingDirectory === 'string') {
+            fullPath = path.join(workingDirectory, filePath).replace(/\\/gm, '/');
+        }
+
         if (!fs.existsSync(fullPath)) {
             return undefined;
         }
@@ -76,7 +83,15 @@ const Internal = {
 };
 
 export const HashGenerator = {
-    async create(urlOrPath: string, workingDirectory): Promise<string | undefined> {
+    /**
+     * Create a hash based on relative file paths.
+     * The urlOrPath can be a full directory path if workingDirectory is set to undefined.
+     *
+     * @param {string} urlOrPath
+     * @param {*} [workingDirectory=undefined]
+     * @return {(Promise<string | undefined>)}
+     */
+    async create(urlOrPath: string, workingDirectory: string | undefined = undefined): Promise<string | undefined> {
         let result: string | undefined;
 
         if (Internal.isValidUrl(urlOrPath)) {
@@ -92,6 +107,12 @@ export const HashGenerator = {
 
         return result;
     },
+    /**
+     * Generates a sha256 from a string
+     *
+     * @param {string} data
+     * @return {string}
+     */
     fromString(data: string): string {
         return createHash('sha256', { encoding: 'hex' }).update(data).digest('hex');
     },

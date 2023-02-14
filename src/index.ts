@@ -11,6 +11,11 @@ import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
 import { SchemaValidator } from './utils/schemaValidator';
 import { buildHashes } from './utils/integrityBuilder';
+import { replaceUrls } from './utils/urlReplace';
+import { NFTData } from './types';
+import { outputJsonFiles } from './utils/outputJsonFiles';
+import { UploadOutput } from './types/uploadOutput';
+import { UrlMapper } from './utils/urlMapper';
 
 const glob = promisify(globMod);
 
@@ -46,7 +51,7 @@ const main = async () => {
     // STEP -> READ FILES IN DIRECTORY
     // Check what file type to process; either csv or json
     const allFiles = (
-        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json)`), {
+        await glob(path.join(folderPath, `+(factory.+(json|csv)|tokens.csv||defaultToken.json||*.token.+(json))`), {
             windowsPathsNoEscape: true,
         })
     ).map((f) => {
@@ -99,7 +104,7 @@ const main = async () => {
 
     // if processing csv files, notify if tokens file is present
     if (isCSV && files.includes(`tokens.${fileType}`)) {
-        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`);
+        ReportGenerator.add(`tokens.${fileType} file was also found in the provided directory.`, true);
     }
 
     // STEP -> ENVIRONMENT SELECTION
@@ -127,6 +132,11 @@ const main = async () => {
     config.environment = envType;
     if (envType == 'custom') {
         setCustomEnvUrl(customUrl);
+    }
+
+    if (typeof config.environment === 'undefined') {
+        ReportGenerator.add(`Failed to specify an environment. Exiting process.`, true);
+        return process.exit(1);
     }
 
     // STEP -> FILE PARSING & PROCESSING / CONVERSION
@@ -174,6 +184,8 @@ const main = async () => {
     }
 
     ReportGenerator.add(`Attempting to validate tokens.`, false);
+    // console.log(JSON.stringify(nftData.tokens, null, '\t'));
+
     for (let i = 0; i < nftData.tokens.length; i++) {
         if (!SchemaValidator.validate('token', nftData.tokens[i])) {
             ReportGenerator.add(ErrorGenerator.get('INVALID_TOKEN_SCHEMA_AT', i));
@@ -190,8 +202,27 @@ const main = async () => {
         ReportGenerator.add(`All Schemas Passed`, false);
     }
 
-    const hashesNftData = await buildHashes(nftData, folderPath);
-    console.log(JSON.stringify(hashesNftData, null, 2));
+    ReportGenerator.add(`Building Hashes`, false);
+    const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
+
+    ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
+    const updatedUrlsNftData = await replaceUrls<NFTData>(
+        hashesNftData,
+        folderPath,
+        config.collectionName,
+        getEnvironmentUrl(config?.environment)
+    );
+
+    const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
+    const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
+    const finalData: UploadOutput = {
+        collectionName: config.collectionName,
+        hashes: fileHashData,
+        urls: UrlMapper.get(),
+    };
+
+    ReportGenerator.add(`Writing final file: ${outputFile}`, true);
+    fs.writeFileSync(outputFile, JSON.stringify(finalData, null, 2));
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);

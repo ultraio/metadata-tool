@@ -28,7 +28,6 @@ export const TokenSchema = {
         },
         subName: {
             type: 'string',
-            minLength: 1,
             maxLength: 256,
             description:
                 'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
@@ -40,7 +39,6 @@ export const TokenSchema = {
         },
         author: {
             type: 'string',
-            minLength: 1,
             maxLength: 256,
             description: 'Specify the author(s) of the asset to which this NFT represents',
         },
