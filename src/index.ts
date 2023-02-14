@@ -14,6 +14,8 @@ import { buildHashes } from './utils/integrityBuilder';
 import { replaceUrls } from './utils/urlReplace';
 import { NFTData } from './types';
 import { outputJsonFiles } from './utils/outputJsonFiles';
+import { UploadOutput } from './types/uploadOutput';
+import { UrlMapper } from './utils/urlMapper';
 
 const glob = promisify(globMod);
 
@@ -212,10 +214,15 @@ const main = async () => {
     );
 
     const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
+    const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
+    const finalData: UploadOutput = {
+        collectionName: config.collectionName,
+        hashes: fileHashData,
+        urls: UrlMapper.get(),
+    };
 
-    // console.log(JSON.stringify(updatedUrlsNftData, null, 2));
-    // console.log(UrlMapper.get());
-    // console.log(fileHashData);
+    ReportGenerator.add(`Writing final file: ${outputFile}`, true);
+    fs.writeFileSync(outputFile, JSON.stringify(finalData, null, 2));
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);

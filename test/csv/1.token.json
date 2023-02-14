@@ -10,9 +10,12 @@
   "media": {
     "product": {
       "contentType": "image/png",
-      "integrity": null,
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
       "uris": [
-        "https://static.dev.ultra.io/Angry%20Bananas/undefined.png"
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
       ]
     },
     "square": {

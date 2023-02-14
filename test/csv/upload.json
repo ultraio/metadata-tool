@@ -1,0 +1,26 @@
+{
+  "collectionName": "Angry Bananas",
+  "hashes": {
+    "defaultToken": "d36f9bff3744243b61bbb5f697ede5b0fbddae975918a329c6aea311f47d71c4",
+    "factory": "48965c3aa2636bcd3bb21f3ebd1ec51750f0ade471407b15c45ba5bb3e49f46e",
+    "tokens": [
+      {
+        "serialNumber": "1",
+        "hash": "1c9af5e413654f1667572376ba76424fc0c75b617aad24d89e7c92ed31684fce"
+      },
+      {
+        "serialNumber": "2",
+        "hash": "c5bf1dc91a0932d51e6a1e7279377e4b61fc24b02b2c679a743e951b9d77d4b6"
+      },
+      {
+        "serialNumber": "3",
+        "hash": "14a5cb151cd8ad1fae3f42c5871c02e0a9a5ebe95c2e25916973e83edc142cfe"
+      }
+    ]
+  },
+  "urls": {
+    "./factory/images/taco.png": "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png",
+    "./factory/images/img.png": "https://static.dev.ultra.io/Angry%20Bananas/db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939.png",
+    "/some/img.png": "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+  }
+}
