@@ -27,9 +27,9 @@ export async function replaceUrls<T>(
             const splitString = typedData.uris[i].split('.');
             const extension = splitString[splitString.length - 1];
             const finalURL = new URL(
-                `${environmentURL}/${collectionName}/${typedData.integrity?.hash}.${extension}`
+                `${environmentURL}/${collectionName.replace(/ /g, '')}/${typedData.integrity?.hash}.${extension}`
             ).toString();
-            
+
             UrlMapper.set(typedData.uris[i], finalURL);
             typedData.uris[i] = finalURL;
         }
