@@ -5,14 +5,14 @@ import path from 'path';
 import { glob as globMod } from 'glob';
 import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import { promisify } from 'util';
-import { Config, getEnvironmentUrl, setCustomEnvUrl } from './config';
+import { Config, getEnvironment, setCustomEnvironment } from './config';
 import { ErrorGenerator } from './utils/errorGenerator';
 import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
 import { SchemaValidator } from './utils/schemaValidator';
 import { buildHashes } from './utils/integrityBuilder';
 import { replaceUrls } from './utils/urlReplace';
-import { NFTData } from './types';
+import { Environment, NFTData } from './types';
 import { outputJsonFiles } from './utils/outputJsonFiles';
 import { UploadOutput } from './types/uploadOutput';
 import { UrlMapper } from './utils/urlMapper';
@@ -109,7 +109,12 @@ const main = async () => {
 
     // STEP -> ENVIRONMENT SELECTION
     ReportGenerator.add('Prompting user for URL selection.', false);
-    const { envType, customUrl } = await inquirer.prompt([
+    const {
+        envType,
+        customUrl,
+        bucketName,
+        bucketEndpoint,
+    }: { envType: string; customUrl: string; bucketName: string; bucketEndpoint: string } = await inquirer.prompt([
         {
             type: 'list',
             name: 'envType',
@@ -127,11 +132,27 @@ const main = async () => {
                 return isValidUrl(answer) ? true : ErrorGenerator.get('INVALID_URL');
             },
         },
+        {
+            type: 'input',
+            name: 'bucketName',
+            message: 'Enter custom Wasabi/S3 bucket name: ',
+            when(answers) {
+                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
+            },
+        },
+        {
+            type: 'input',
+            name: 'bucketEndpoint',
+            message: 'Enter custom Wasabi/S3 bucket endpoint: ',
+            when(answers) {
+                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
+            },
+        },
     ]);
 
-    config.environment = envType;
+    config.environment = envType as Environment;
     if (envType == 'custom') {
-        setCustomEnvUrl(customUrl);
+        setCustomEnvironment(customUrl, bucketEndpoint, bucketName);
     }
 
     if (typeof config.environment === 'undefined') {
@@ -155,10 +176,9 @@ const main = async () => {
         process.exit(1);
     }
 
+    const env = getEnvironment(config?.environment);
     ReportGenerator.add(
-        `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${getEnvironmentUrl(
-            config.environment!
-        )}`,
+        `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${env.url}, endpoint: ${env.endpoint}, bucket: ${env.bucket}`,
         false
     );
 
@@ -184,7 +204,6 @@ const main = async () => {
     }
 
     ReportGenerator.add(`Attempting to validate tokens.`, false);
-    // console.log(JSON.stringify(nftData.tokens, null, '\t'));
 
     for (let i = 0; i < nftData.tokens.length; i++) {
         if (!SchemaValidator.validate('token', nftData.tokens[i])) {
@@ -206,12 +225,7 @@ const main = async () => {
     const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
 
     ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
-    const updatedUrlsNftData = await replaceUrls<NFTData>(
-        hashesNftData,
-        folderPath,
-        config.collectionName,
-        getEnvironmentUrl(config?.environment)
-    );
+    const updatedUrlsNftData = await replaceUrls<NFTData>(hashesNftData, folderPath, config.collectionName, env.url);
 
     const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
     const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
@@ -219,6 +233,7 @@ const main = async () => {
         collectionName: config.collectionName,
         hashes: fileHashData,
         urls: UrlMapper.get(),
+        environment: { env: config.environment, ...env },
     };
 
     ReportGenerator.add(`Writing final file: ${outputFile}`, true);
