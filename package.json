@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.ts",
     "scripts": {
-        "dev": "ts-node src/index.ts",
+        "dev": "export ENV=DEV;ts-node src/index.ts",
         "tsc:build": "tsc",
         "build": "tsc && node scripts/build.js",
         "test": "jest"
