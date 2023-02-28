@@ -109,7 +109,7 @@ const main = async () => {
 
     // STEP -> ENVIRONMENT SELECTION
     ReportGenerator.add('Prompting user for URL selection.', false);
-    const {
+    let {
         envType,
         customUrl,
         bucketName,
@@ -152,6 +152,8 @@ const main = async () => {
 
     config.environment = envType as Environment;
     if (envType == 'custom') {
+        // Get rid of any trailing "/" in the url
+        customUrl = customUrl.endsWith('/') ? customUrl.slice(0, -1) : customUrl;
         setCustomEnvironment(customUrl, bucketEndpoint, bucketName);
     }
 
