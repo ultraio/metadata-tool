@@ -1,3 +1,5 @@
+import { Environment } from 'types';
+
 export type UrlMap = { [relativePath: string]: string };
 export type SerialHash = { serialNumber: number | string; hash: string };
 
@@ -35,6 +37,19 @@ export interface UploadOutput {
      * @memberof UploadOutput
      */
     collectionName: string;
+
+    /**
+     * Upload env info
+     *
+     * @type {Object}
+     * @memberof UploadOutput
+     */
+    environment: {
+        env: Environment;
+        url: string;
+        endpoint: string;
+        bucket: string;
+    };
 
     /**
      * Hashes relating to the individual file outputs.
