@@ -3,7 +3,7 @@ on: [push]
 jobs:
     slack_upload_job:
         runs-on: ubuntu-latest
-        name: Upload test file
+        name: Upload release on slack
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -15,6 +15,6 @@ jobs:
               uses: adrey/slack-file-upload-action@master
               with:
                   token: ${{ secrets.SLACK_TOKEN }}
-                  path: test.txt
+                  path: releases/*
                   channel: metadata-tool-releases
             - run: echo "Finished. Job's status is ${{ job.status }}."
