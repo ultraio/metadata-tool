@@ -23,6 +23,7 @@ jobs:
               uses: adrey/slack-file-upload-action@master
               with:
                   token: ${{ secrets.SLACK_TOKEN }}
-                  path: ${{ env.windows_binary }}
+                  # path: ${{ env.windows_binary }}
+                  path: releases/metadata-tool-v1-0-0-win.exe
                   channel: metadata-tool-releases
             - run: echo "Finished. Job's status is ${{ job.status }}."
