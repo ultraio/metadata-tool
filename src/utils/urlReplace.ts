@@ -28,7 +28,13 @@ export async function replaceUrls<T>(
             const extension = splitString[splitString.length - 1];
             const finalURL = new URL(
                 `${environmentURL}/${collectionName.replace(/ /g, '')}/${typedData.integrity?.hash}.${extension}`
-            ).toString();
+            )
+                .toString()
+                // To remove any query params (if they exist on any external urls) from the output url (output url in this case is the url of S3/Wasabi buckets)
+                // This will fix, for eg:
+                // input url ---> https://www.somewebsite.com/5000.jpg?width=1200&quality=85&auto=format&fit=max&token=0c4de651644de5fe939d8dbd6b14ba66
+                // output url ---> https://my-custom-env.s3.amazonaws.com/CollectionName/<file-hash>.jpg
+                .split('?')[0];
 
             UrlMapper.set(typedData.uris[i], finalURL);
             typedData.uris[i] = finalURL;

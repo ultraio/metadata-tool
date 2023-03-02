@@ -41,7 +41,9 @@ export const ReportGenerator = {
                 return;
             }
 
-            const filePath = path.join(process.cwd(), '/', REPORT_NAME).replace(/\\/gm, '/');
+            // cwd fix for pkg - can't use process.cwd() in packaged binary/executable
+            const basePath = process.env.ENV == 'DEV' ? process.cwd() : path.dirname(process.execPath);
+            const filePath = path.join(basePath, '/', REPORT_NAME).replace(/\\/gm, '/');
             if (fs.existsSync(filePath)) {
                 fs.rmSync(filePath, { force: true });
             }
