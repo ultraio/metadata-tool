@@ -8,7 +8,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
             - run: npm i
-            - run: npm build
+            - run: npm run build
             - run: ls ${{ github.workspace }}
             - run: echo "Test file " > test.txt
             - name: Upload to slack step
