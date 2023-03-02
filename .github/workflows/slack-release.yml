@@ -10,11 +10,20 @@ jobs:
             - run: npm i
             - run: npm run build
             - run: ls ${{ github.workspace }}
-            - run: echo "Test file " > test.txt
+            - name: List files in the repository
+              run: |
+                  arr=(releases/*)
+                    echo "${arr[0]}"
+                    echo "${arr[1]}"
+                    echo "${arr[2]}"
+                    echo "linux_binary=${arr[0]}" >> $GITHUB_ENV
+                    echo "macos_binary=${arr[1]}" >> $GITHUB_ENV
+                    echo "windows_binary=${arr[2]}" >> $GITHUB_ENV
+                  done
             - name: Upload to slack step
               uses: adrey/slack-file-upload-action@master
               with:
                   token: ${{ secrets.SLACK_TOKEN }}
-                  path: src/schemas/*
+                  path: ${{ env.windows_binary }}
                   channel: metadata-tool-releases
             - run: echo "Finished. Job's status is ${{ job.status }}."
