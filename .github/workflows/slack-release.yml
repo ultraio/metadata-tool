@@ -13,13 +13,12 @@ jobs:
             - name: List files in the repository
               run: |
                   arr=(releases/*)
-                    echo "${arr[0]}"
-                    echo "${arr[1]}"
-                    echo "${arr[2]}"
-                    echo "linux_binary=${arr[0]}" >> $GITHUB_ENV
-                    echo "macos_binary=${arr[1]}" >> $GITHUB_ENV
-                    echo "windows_binary=${arr[2]}" >> $GITHUB_ENV
-                  done
+                  echo "${arr[0]}"
+                  echo "${arr[1]}"
+                  echo "${arr[2]}"
+                  echo "linux_binary=${arr[0]}" >> $GITHUB_ENV
+                  echo "macos_binary=${arr[1]}" >> $GITHUB_ENV
+                  echo "windows_binary=${arr[2]}" >> $GITHUB_ENV
             - name: Upload to slack step
               uses: adrey/slack-file-upload-action@master
               with:
