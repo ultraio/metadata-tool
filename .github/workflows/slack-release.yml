@@ -10,20 +10,12 @@ jobs:
             - run: npm i
             - run: npm run build
             - run: ls ${{ github.workspace }}
-            - name: List files in the repository
-              run: |
-                  arr=(releases/*)
-                  echo "${arr[0]}"
-                  echo "${arr[1]}"
-                  echo "${arr[2]}"
-                  echo "linux_binary=${arr[0]}" >> $GITHUB_ENV
-                  echo "macos_binary=${arr[1]}" >> $GITHUB_ENV
-                  echo "windows_binary=${arr[2]}" >> $GITHUB_ENV
             - name: Upload to slack step
-              uses: adrey/slack-file-upload-action@master
+              uses: MeilCli/slack-upload-file@v3
               with:
-                  token: ${{ secrets.SLACK_TOKEN }}
-                  # path: ${{ env.windows_binary }}
-                  path: releases/metadata-tool-v1-0-0-win.exe
-                  channel: metadata-tool-releases
+                  slack_token: ${{ secrets.SLACK_TOKEN }}
+                  channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+                  file_type: auto
+                  file_path: releases/*
+                  initial_comment: '🎊 A new version of Metadata tool is available to download 🎊'
             - run: echo "Finished. Job's status is ${{ job.status }}."
