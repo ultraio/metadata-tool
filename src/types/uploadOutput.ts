@@ -10,7 +10,7 @@ export interface FileHashes {
      * @type {string}
      * @memberof FileHashes
      */
-    defaultToken: string;
+    defaultToken: string | undefined;
 
     /**
      * The factory hash from the file.
@@ -49,6 +49,7 @@ export interface UploadOutput {
         url: string;
         endpoint: string;
         bucket: string;
+        tokenUriTemplate: string; // The uri template to follow to tokens - either "{tokenSerialNum}" or "{tokenHash}"
     };
 
     /**

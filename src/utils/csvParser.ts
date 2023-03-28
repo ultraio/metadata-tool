@@ -97,10 +97,12 @@ const Internal = {
      * @returns An object of type FactoryMetaData
      */
     prepareFactory(record: any): FactoryMetaData {
-        let factory: FactoryMetaData = Internal.prepareMetadata(record);
+        let factory: FactoryMetaData = {
+            tokenUriTemplate: record['Token URI Template'],
+            ...Internal.prepareMetadata(record),
+        };
 
         // parse/process/add any FactoryMetadata specific properties here
-
         const tempAttributeList = [
             [record['Att Type 1'], record['Att Name 1'], record['Att Desc 1']],
             [record['Att Type 2'], record['Att Name 2'], record['Att Desc 2']],

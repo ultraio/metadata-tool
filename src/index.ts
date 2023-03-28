@@ -170,14 +170,6 @@ const main = async () => {
     // collection name is read from factory.csv/factory.json
     config.collectionName = nftData.factory.name;
 
-    ReportGenerator.add(`Validating if defaultToken was provided.`, false);
-    if (typeof nftData.defaultToken === 'undefined') {
-        const errorMessage = `defaultToken could not be processed and is missing.`;
-        ReportGenerator.add(errorMessage, false);
-        await promptUser(errorMessage);
-        process.exit(1);
-    }
-
     const env = getEnvironment(config?.environment);
     ReportGenerator.add(
         `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${env.url}, endpoint: ${env.endpoint}, bucket: ${env.bucket}`,
@@ -197,12 +189,14 @@ const main = async () => {
         ReportGenerator.add(`factory passed`, false);
     }
 
-    ReportGenerator.add(`Attempting to validate defaultToken.`, false);
-    if (!SchemaValidator.validate('defaultToken', nftData.defaultToken)) {
-        ReportGenerator.add(ErrorGenerator.get('INVALID_SCHEMA_FILE', `defaultToken.${fileType}`));
-        allValid = false;
-    } else {
-        ReportGenerator.add(`defaultToken passed`, false);
+    if (nftData.defaultToken) {
+        ReportGenerator.add(`Attempting to validate defaultToken.`, false);
+        if (!SchemaValidator.validate('defaultToken', nftData.defaultToken)) {
+            ReportGenerator.add(ErrorGenerator.get('INVALID_SCHEMA_FILE', `defaultToken.${fileType}`));
+            allValid = false;
+        } else {
+            ReportGenerator.add(`defaultToken passed`, false);
+        }
     }
 
     ReportGenerator.add(`Attempting to validate tokens.`, false);
@@ -223,23 +217,31 @@ const main = async () => {
         ReportGenerator.add(`All Schemas Passed`, false);
     }
 
-    ReportGenerator.add(`Building Hashes`, false);
-    const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
+    // Only build hashes if filetype is CSV - for JSON files we just need to verify schema
+    if (isCSV) {
+        ReportGenerator.add(`Building Hashes`, false);
+        const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
 
-    ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
-    const updatedUrlsNftData = await replaceUrls<NFTData>(hashesNftData, folderPath, config.collectionName, env.url);
+        ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
+        const updatedUrlsNftData = await replaceUrls<NFTData>(
+            hashesNftData,
+            folderPath,
+            config.collectionName,
+            env.url
+        );
 
-    const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
-    const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
-    const finalData: UploadOutput = {
-        collectionName: config.collectionName,
-        hashes: fileHashData,
-        urls: UrlMapper.get(),
-        environment: { env: config.environment, ...env },
-    };
+        const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
+        const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
+        const finalData: UploadOutput = {
+            collectionName: config.collectionName,
+            hashes: fileHashData,
+            urls: UrlMapper.get(),
+            environment: { env: config.environment, tokenUriTemplate: nftData.factory.tokenUriTemplate, ...env },
+        };
 
-    ReportGenerator.add(`Writing final file: ${outputFile}`, true);
-    fs.writeFileSync(outputFile, JSON.stringify(finalData, null, 2));
+        ReportGenerator.add(`Writing final file: ${outputFile}`, true);
+        fs.writeFileSync(outputFile, JSON.stringify(finalData, null, 2));
+    }
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;
     ReportGenerator.add(exitMessage, false);

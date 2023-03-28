@@ -26,16 +26,21 @@ export async function outputJsonFiles(data: NFTData, workingDirectory: string): 
         factory: normalizeUrl(path.join(workingDirectory, '/factory.json')),
     };
 
-    ReportGenerator.add(`Writing defaultToken.json to file.`);
-    fs.writeFileSync(paths.defaultToken, JSON.stringify(data.defaultToken, null, 2));
+    if (data.defaultToken) {
+        ReportGenerator.add(`Writing defaultToken.json to file.`);
+        fs.writeFileSync(paths.defaultToken, JSON.stringify(data.defaultToken, null, 2));
+    }
 
     ReportGenerator.add(`Writing factory.json to file.`);
     fs.writeFileSync(paths.factory, JSON.stringify(data.factory, null, 2));
 
-    const defaultTokenFileHash = await HashGenerator.create(paths.defaultToken);
-    if (typeof defaultTokenFileHash === 'undefined') {
-        ReportGenerator.add(ErrorGenerator.get('HASH_FOR_FILE_FAILED', paths.defaultToken), true);
-        process.exit(1);
+    let defaultTokenFileHash: string | undefined = undefined;
+    if (data.defaultToken) {
+        defaultTokenFileHash = await HashGenerator.create(paths.defaultToken);
+        if (typeof defaultTokenFileHash === 'undefined') {
+            ReportGenerator.add(ErrorGenerator.get('HASH_FOR_FILE_FAILED', paths.defaultToken), true);
+            process.exit(1);
+        }
     }
 
     const factoryFileHash = await HashGenerator.create(paths.factory);
