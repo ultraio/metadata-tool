@@ -96,6 +96,11 @@ export interface FactoryMetaData extends Metadata {
             description?: string;
         };
     };
+
+    /**
+     * URI template for tokens of this factory
+     */
+    tokenUriTemplate: '{tokenSerialNum}' | '{tokenHash}';
 }
 
 export interface TokenMetaData extends Metadata {

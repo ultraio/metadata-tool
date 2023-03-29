@@ -14,6 +14,13 @@ export const FactorySchema = {
             maxLength: 256,
             description: 'Identifies the type of asset that this NFT Factory represents',
         },
+        tokenUriTemplate: {
+            type: 'string',
+            enum: ['{tokenSerialNum}', '{tokenHash}'],
+            minLength: 1,
+            maxLength: 256,
+            description: 'URI template for the tokens of this factory',
+        },
         name: {
             type: 'string',
             minLength: 1,
@@ -88,7 +95,7 @@ export const FactorySchema = {
             additionalProperties: { $ref: '#/definitions/staticResource' },
         },
     },
-    required: ['specVersion', 'name', 'defaultLocale', 'media'],
+    required: ['specVersion', 'name', 'tokenUriTemplate', 'defaultLocale', 'media'],
     additionalProperties: false,
     definitions: {
         staticResource: {
