@@ -5,7 +5,7 @@ import path from 'path';
 import { glob as globMod } from 'glob';
 import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import { promisify } from 'util';
-import { Config, getEnvironment, setCustomEnvironment } from './config';
+import { Config, getEnvironmentUrl, setCustomEnvironmentUrl } from './config';
 import { ErrorGenerator } from './utils/errorGenerator';
 import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
@@ -109,12 +109,7 @@ const main = async () => {
 
     // STEP -> ENVIRONMENT SELECTION
     ReportGenerator.add('Prompting user for URL selection.', false);
-    let {
-        envType,
-        customUrl,
-        bucketName,
-        bucketEndpoint,
-    }: { envType: string; customUrl: string; bucketName: string; bucketEndpoint: string } = await inquirer.prompt([
+    let { envType, customUrl }: { envType: string; customUrl: string } = await inquirer.prompt([
         {
             type: 'list',
             name: 'envType',
@@ -132,29 +127,13 @@ const main = async () => {
                 return isValidUrl(answer) ? true : ErrorGenerator.get('INVALID_URL');
             },
         },
-        {
-            type: 'input',
-            name: 'bucketName',
-            message: 'Enter custom Wasabi/S3 bucket name: ',
-            when(answers) {
-                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
-            },
-        },
-        {
-            type: 'input',
-            name: 'bucketEndpoint',
-            message: 'Enter custom Wasabi/S3 bucket endpoint: ',
-            when(answers) {
-                return answers.envType == 'custom'; // will only ask for custom url when "custom" env is selected
-            },
-        },
     ]);
 
     config.environment = envType as Environment;
     if (envType == 'custom') {
         // Get rid of any trailing "/" in the url
         customUrl = customUrl.endsWith('/') ? customUrl.slice(0, -1) : customUrl;
-        setCustomEnvironment(customUrl, bucketEndpoint, bucketName);
+        setCustomEnvironmentUrl(customUrl);
     }
 
     if (typeof config.environment === 'undefined') {
@@ -170,11 +149,8 @@ const main = async () => {
     // collection name is read from factory.csv/factory.json
     config.collectionName = nftData.factory.name;
 
-    const env = getEnvironment(config?.environment);
-    ReportGenerator.add(
-        `Collection name: ${config.collectionName}, env: ${config.environment}, url: ${env.url}, endpoint: ${env.endpoint}, bucket: ${env.bucket}`,
-        false
-    );
+    const envUrl = getEnvironmentUrl(config?.environment);
+    ReportGenerator.add(`Collection name: ${config.collectionName}, env: ${config.environment}, url: ${envUrl}`, false);
 
     // STEP -> SCHEMA VALIDATION
     ReportGenerator.add(`Validating schema files.`, false);
@@ -223,12 +199,7 @@ const main = async () => {
         const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
 
         ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
-        const updatedUrlsNftData = await replaceUrls<NFTData>(
-            hashesNftData,
-            folderPath,
-            config.collectionName,
-            env.url
-        );
+        const updatedUrlsNftData = await replaceUrls<NFTData>(hashesNftData, folderPath, config.collectionName, envUrl);
 
         const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
         const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
@@ -236,7 +207,7 @@ const main = async () => {
             collectionName: config.collectionName,
             hashes: fileHashData,
             urls: UrlMapper.get(),
-            environment: { env: config.environment, tokenUriTemplate: nftData.factory.tokenUriTemplate, ...env },
+            environment: { env: config.environment, tokenUriTemplate: nftData.factory.tokenUriTemplate, url: envUrl },
         };
 
         ReportGenerator.add(`Writing final file: ${outputFile}`, true);

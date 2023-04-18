@@ -47,8 +47,7 @@ export interface UploadOutput {
     environment: {
         env: Environment;
         url: string;
-        endpoint: string;
-        bucket: string;
+
         tokenUriTemplate: string; // The uri template to follow to tokens - either "{tokenSerialNum}" or "{tokenHash}"
     };
 
