@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "noImplicitAny": false,
+        "moduleResolution": "node",
+        "sourceMap": false,
+        "outDir": "dist",
+        "baseUrl": "./",
+        "paths": {
+            "*": ["node_modules/*", "src/*", "test/*"]
+        },
+        "declaration": true,
+        "strict": true
+    },
+    "include": ["./src/**/*", "test/schemaValidator.test.ts"],
+    "exclude": ["./test/**/*"]
+}

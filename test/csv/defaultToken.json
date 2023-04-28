@@ -1,0 +1,81 @@
+{
+  "serialNumber": "default",
+  "specVersion": "0.1",
+  "type": "game",
+  "name": "Angry Banana",
+  "subName": "foo",
+  "description": "bar",
+  "author": "foobar",
+  "defaultLocale": "en-US",
+  "media": {
+    "product": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "square": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "hero": {
+      "contentType": "image/png",
+      "integrity": {
+        "type": "SHA256",
+        "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+      },
+      "uris": [
+        "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+      ]
+    },
+    "gallery": [
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+        ]
+      },
+      {
+        "contentType": "image/png",
+        "integrity": {
+          "type": "SHA256",
+          "hash": "59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e"
+        },
+        "uris": [
+          "https://static.dev.ultra.io/Angry%20Bananas/59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e.png"
+        ]
+      }
+    ]
+  },
+  "attributes": {
+    "health": "1",
+    "color": "1",
+    "a3": "#FFFFFF",
+    "a4": "",
+    "a5": ""
+  }
+}

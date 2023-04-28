@@ -1,0 +1,6 @@
+{
+    "dev": "https://somehost.dev.com/some/path",
+    "qa": "https://somehost.qa.com/some/path",
+    "staging": "https://somehost.staging.com/some/path",
+    "prod": "https://somehost.com/some/path"
+}
