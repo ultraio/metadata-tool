@@ -3,6 +3,7 @@ import { FactoryMetaData } from '../../src/types';
 export const FactoryMetaExample: FactoryMetaData = {
     specVersion: '1.0',
     defaultLocale: 'en-US',
+    tokenUriTemplate: '{tokenSerialNum}',
     type: 'game',
     name: 'Fallout 99',
     author: 'Bethesda Studios',
