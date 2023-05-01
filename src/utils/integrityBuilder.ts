@@ -53,7 +53,7 @@ export async function buildHashes<T>(data: Object, workingDirectory: string): Pr
 
         typedData.integrity = {
             type: 'SHA256',
-            hash: HashGenerator.fromString(contentHashes),
+            hash: contentHashes,
         };
 
         return typedData as T;

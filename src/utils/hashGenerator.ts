@@ -107,13 +107,4 @@ export const HashGenerator = {
 
         return result;
     },
-    /**
-     * Generates a sha256 from a string
-     *
-     * @param {string} data
-     * @return {string}
-     */
-    fromString(data: string): string {
-        return createHash('sha256', { encoding: 'hex' }).update(data).digest('hex');
-    },
 };

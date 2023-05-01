@@ -2,7 +2,9 @@
 
 ## Installing
 
-You only need to install the npm packages first using `npm i`.
+1. You only need to install the npm packages first using `npm i`.
+
+2. Create `config.json` file - see `config.example.json` for reference.
 
 ## How to use
 
