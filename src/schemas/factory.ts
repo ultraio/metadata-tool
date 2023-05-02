@@ -14,13 +14,6 @@ export const FactorySchema = {
             maxLength: 256,
             description: 'Identifies the type of asset that this NFT Factory represents',
         },
-        tokenUriTemplate: {
-            type: 'string',
-            enum: ['{tokenSerialNum}', '{tokenHash}'],
-            minLength: 1,
-            maxLength: 256,
-            description: 'URI template for the tokens of this factory',
-        },
         name: {
             type: 'string',
             minLength: 1,
@@ -95,7 +88,7 @@ export const FactorySchema = {
             additionalProperties: { $ref: '#/definitions/staticResource' },
         },
     },
-    required: ['specVersion', 'name', 'tokenUriTemplate', 'defaultLocale', 'media'],
+    required: ['specVersion', 'name', 'defaultLocale', 'media'],
     additionalProperties: false,
     definitions: {
         staticResource: {
@@ -129,4 +122,31 @@ export const FactorySchema = {
             additionalProperties: false,
         },
     },
+};
+
+/**
+ * This is an extended version of the on-chain Factory schema.
+ * It is extended to include validation for `tokenUriTemplate` property that is
+ * provided as a part of the factory.csv file.
+ *
+ *
+ * Since `tokenUriTemplate` is not present (or used) on-chain, we did not include it in the
+ * original FactorySchema.
+ *
+ * `tokenUriTemplate` property is specific to this tool only.
+ */
+const ExtendedFactorySchemaProperties = Object.assign(FactorySchema.properties, {
+    tokenUriTemplate: {
+        type: 'string',
+        enum: ['{serial_number}', '{hash}'],
+        minLength: 1,
+        maxLength: 256,
+        description: 'URI template for the tokens of this factory',
+    },
+});
+
+export const ExtendedFactorySchema = {
+    ...FactorySchema,
+    properties: ExtendedFactorySchemaProperties,
+    required: FactorySchema.required.concat('tokenUriTemplate'),
 };

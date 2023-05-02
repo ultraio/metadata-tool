@@ -32,7 +32,7 @@ export async function outputJsonFiles(data: NFTData, workingDirectory: string): 
     }
 
     ReportGenerator.add(`Writing factory.json to file.`);
-    fs.writeFileSync(paths.factory, JSON.stringify(data.factory, null, 2));
+    fs.writeFileSync(paths.factory, JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2));
 
     let defaultTokenFileHash: string | undefined = undefined;
     if (data.defaultToken) {

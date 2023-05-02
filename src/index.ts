@@ -185,7 +185,12 @@ const main = async () => {
     let allValid = true;
 
     ReportGenerator.add(`Attempting to validate factory.`, false);
-    if (!SchemaValidator.validate('factory', nftData.factory)) {
+
+    /**
+     * Use on-chain factory schema when validating json files
+     * Use extended factory schema when validation csv files (because csv files will also have `tokenUriTemplate` property)
+     */
+    if (!SchemaValidator.validate(isCSV ? 'extendedFactory' : 'factory', nftData.factory)) {
         ReportGenerator.add(ErrorGenerator.get('INVALID_SCHEMA_FILE', `factory.${fileType}`));
         allValid = false;
     } else {

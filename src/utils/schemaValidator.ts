@@ -1,12 +1,13 @@
 import ajv from 'ajv';
 
-import { FactorySchema } from '../schemas/factory';
+import { FactorySchema, ExtendedFactorySchema } from '../schemas/factory';
 import { TokenSchema } from '../schemas/token';
 import { ReportGenerator } from './reportGenerator';
 
 const ajvInstance = new ajv({ allowUnionTypes: true });
 const SchemaBindings = {
     factory: FactorySchema,
+    extendedFactory: ExtendedFactorySchema,
     token: TokenSchema,
     defaultToken: TokenSchema,
 };
