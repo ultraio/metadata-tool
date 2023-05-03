@@ -98,7 +98,7 @@ export interface FactoryMetaData extends Metadata {
     /**
      * URI template for tokens of this factory
      */
-    tokenUriTemplate: '{tokenSerialNum}' | '{tokenHash}';
+    tokenUriTemplate: '{serial_number}' | '{hash}';
 }
 
 export interface TokenMetaData extends Metadata {
