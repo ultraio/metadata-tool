@@ -27,7 +27,7 @@ This tool takes CSVs and media files (Uniq images, videos and other supported me
   <img src="docs/img/flow.png" alt="Tool flow image"/>
 </p>
 
-Note that the tool itself does not interact with the blockchain; rather, it simplifies the process of creating complicated token factories and the associated tokens.
+**Note that the tool itself does not interact with the blockchain; rather, it simplifies the process of creating complicated token factories and the associated tokens.**
 
 ---
 
@@ -125,7 +125,7 @@ However, the folder structure can be modified and replaced with a single folder 
 
 There are two ways to link to an image/media file in your CSV file. One is relative path, and the other is an external HTTP or HTTPS address.
 
--   Relative Path: `./tokens/token1/image.png` (Relative to your root folder)
+-   Relative Path: `./tokens/1/image.png` (Relative to your root folder)
 -   External: `https://some-external-website.com/tokens/1/image.png`
 
 ### Supported Media Types:
