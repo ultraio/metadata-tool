@@ -42,7 +42,7 @@ jobs:
               with:
                   name: Release ${{ steps.package-version.outputs.current-version }}
                   tag_name: ${{ steps.package-version.outputs.current-version }}
-                  body_path: ./release/release_body.txt
+                  body_path: ./releases/release_body.txt
                   files: |
                       .releases/*
 
