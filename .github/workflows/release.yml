@@ -43,8 +43,7 @@ jobs:
                   name: Release ${{ steps.package-version.outputs.current-version }}
                   tag_name: ${{ steps.package-version.outputs.current-version }}
                   body_path: ./releases/release_body.txt
-                  files: |
-                      .releases/*
+                  files: ./releases/*
 
             # - name: Upload to slack step
             #   uses: MeilCli/slack-upload-file@v3
