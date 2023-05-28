@@ -4,8 +4,8 @@ import { buildHashes } from '../src/utils/integrityBuilder';
 import { NFTData } from '../src/types';
 
 const testPath = './test/csv';
-const imgHash = '59c26867c8075c400100173d4d75751aaa3f0af78820ef9656ab4c87567f811e';
-const tacoHash = 'db246aaf2a7acdc7dd70f902e4b6c642fe94a1f23823024f9c67c657d9878939';
+const imgHash = '595a1d87de162c7c92b14d1882ae6d842381e01d2f9b3361566dbefc2af2e1d2';
+const tacoHash = '4a5fea9b26da3a2cc28062e5a900add545d3ea83229b9ad60124389f1459e8be';
 
 let data: NFTData;
 let hashedData: NFTData;

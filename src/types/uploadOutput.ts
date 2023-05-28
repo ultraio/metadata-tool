@@ -1,31 +1,6 @@
 export type UrlMap = { [relativePath: string]: string };
-export type SerialHash = { serialNumber: number | string; hash: string };
-
-export interface FileHashes {
-    /**
-     * The default token hash from the file.
-     *
-     * @type {string}
-     * @memberof FileHashes
-     */
-    defaultToken: string | undefined;
-
-    /**
-     * The factory hash from the file.
-     *
-     * @type {string}
-     * @memberof FileHashes
-     */
-    factory: string;
-
-    /**
-     * List of hashes from individual token files organized by serialNumber
-     *
-     * @type {Array<SerialHash>}
-     * @memberof FileHashes
-     */
-    tokens: Array<SerialHash>;
-}
+export type HashUrl = { hash: string; url: string };
+export type SerialHashUrl = { serialNumber: number | string } & HashUrl;
 
 export interface UploadOutput {
     /**
@@ -45,17 +20,32 @@ export interface UploadOutput {
     environment: {
         env: string;
         url: string;
-
         tokenUriTemplate: '{serial_number}' | '{hash}'; // The uri template to follow to tokens - either "{serial_number}" or "{hash}"
     };
 
     /**
-     * Hashes relating to the individual file outputs.
+     * The default token hash & url.
      *
-     * @type {FileHashes}
+     * @type {HashUrl}
      * @memberof UploadOutput
      */
-    hashes: FileHashes;
+    defaultToken: HashUrl | undefined;
+
+    /**
+     * The factory hash & url.
+     *
+     * @type {HashUrl}
+     * @memberof UploadOutput
+     */
+    factory: HashUrl;
+
+    /**
+     * List of hashes from individual token files organized by serialNumber
+     *
+     * @type {Array<SerialHash>}
+     * @memberof UploadOutput
+     */
+    tokens: Array<SerialHashUrl>;
 
     /**
      * What relative URL belongs to what URL path.
@@ -63,5 +53,5 @@ export interface UploadOutput {
      * @type {UrlMap}
      * @memberof UploadOutput
      */
-    urls: UrlMap;
+    media: UrlMap;
 }

@@ -141,8 +141,11 @@ const main = async () => {
 
     // add custom env and it's url to env-url mapping
     if (selectedEnv == 'custom') {
-        envs[selectedEnv] = customUrl.endsWith('/') ? customUrl.slice(0, -1) : customUrl;
+        envs[selectedEnv] = customUrl;
     }
+
+    // strip trailing slash in the env url, if any
+    envs[selectedEnv] = envs[selectedEnv].endsWith('/') ? envs[selectedEnv].slice(0, -1) : envs[selectedEnv];
 
     // if config was not already set, set it
     if (!config) {
@@ -238,12 +241,15 @@ const main = async () => {
             config.environmentUrl
         );
 
-        const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath);
-        const outputFile = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
-        const finalData: UploadOutput = {
+        const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath, config);
+        const outputFilePath = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');
+
+        const outputData: UploadOutput = {
             collectionName: config.collectionName,
-            hashes: fileHashData,
-            urls: UrlMapper.get(),
+            factory: fileHashData.factory,
+            defaultToken: fileHashData.defaultToken,
+            tokens: fileHashData.tokens,
+            media: UrlMapper.get(),
             environment: {
                 env: config.environment,
                 tokenUriTemplate: nftData.factory.tokenUriTemplate,
@@ -251,8 +257,8 @@ const main = async () => {
             },
         };
 
-        ReportGenerator.add(`Writing final file: ${outputFile}`, true);
-        fs.writeFileSync(outputFile, JSON.stringify(finalData, null, 2));
+        ReportGenerator.add(`Writing final file: ${outputFilePath}`, true);
+        fs.writeFileSync(outputFilePath, JSON.stringify(outputData, null, 2));
     }
 
     const exitMessage = `Finished Processing. Press [Enter] to Exit`;

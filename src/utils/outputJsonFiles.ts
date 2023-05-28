@@ -1,10 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { NFTData } from '../types';
-import { FileHashes, SerialHash } from '../types/uploadOutput';
+import { SerialHashUrl, HashUrl } from '../types/uploadOutput';
 import { ErrorGenerator } from './errorGenerator';
 import { HashGenerator } from './hashGenerator';
 import { ReportGenerator } from './reportGenerator';
+import { Config } from 'config';
 
 function normalizeUrl(url: string) {
     return url.replace(/\\/gm, '/');
@@ -18,9 +19,16 @@ function normalizeUrl(url: string) {
  * @export
  * @param {NFTData} data
  * @param {string} workingDirectory
- * @return {Promise<FileHashes>}
  */
-export async function outputJsonFiles(data: NFTData, workingDirectory: string): Promise<FileHashes> {
+export async function outputJsonFiles(
+    data: NFTData,
+    workingDirectory: string,
+    config: Config
+): Promise<{
+    factory: HashUrl;
+    defaultToken: HashUrl | undefined;
+    tokens: Array<SerialHashUrl>;
+}> {
     const paths = {
         defaultToken: normalizeUrl(path.join(workingDirectory, '/defaultToken.json')),
         factory: normalizeUrl(path.join(workingDirectory, '/factory.json')),
@@ -34,22 +42,36 @@ export async function outputJsonFiles(data: NFTData, workingDirectory: string): 
     ReportGenerator.add(`Writing factory.json to file.`);
     fs.writeFileSync(paths.factory, JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2));
 
-    let defaultTokenFileHash: string | undefined = undefined;
+    let defaultToken: HashUrl | undefined = undefined;
     if (data.defaultToken) {
-        defaultTokenFileHash = await HashGenerator.create(paths.defaultToken);
-        if (typeof defaultTokenFileHash === 'undefined') {
+        const defaultTokenHash = await HashGenerator.create(paths.defaultToken);
+        if (typeof defaultTokenHash === 'undefined') {
             ReportGenerator.add(ErrorGenerator.get('HASH_FOR_FILE_FAILED', paths.defaultToken), true);
             process.exit(1);
         }
+
+        const defaultTokenFileName =
+            (data.factory.tokenUriTemplate == '{serial_number}' ? '{serial_number}' : defaultTokenHash) + '.json';
+        const defaultTokenUrl = config.environmentUrl + '/' + config.collectionName + '/' + defaultTokenFileName;
+
+        defaultToken = {
+            hash: defaultTokenHash,
+            url: defaultTokenUrl,
+        };
     }
 
-    const factoryFileHash = await HashGenerator.create(paths.factory);
-    if (typeof factoryFileHash === 'undefined') {
+    const factoryHash = await HashGenerator.create(paths.factory);
+    if (typeof factoryHash === 'undefined') {
         ReportGenerator.add(ErrorGenerator.get('HASH_FOR_FILE_FAILED', paths.factory), true);
         process.exit(1);
     }
 
-    const tokens: Array<SerialHash> = [];
+    const factory: HashUrl = {
+        hash: factoryHash,
+        url: config.environmentUrl + '/' + config.collectionName + '/' + factoryHash + '.json',
+    };
+
+    const tokens: Array<SerialHashUrl> = [];
 
     for (let token of data.tokens) {
         const tokenPath = normalizeUrl(path.join(workingDirectory, `/${token.serialNumber}.token.json`));
@@ -63,12 +85,16 @@ export async function outputJsonFiles(data: NFTData, workingDirectory: string): 
             process.exit(1);
         }
 
-        tokens.push({ serialNumber: token.serialNumber, hash: tokenHash });
+        const tokenFileName =
+            (data.factory.tokenUriTemplate == '{serial_number}' ? token.serialNumber : tokenHash) + '.json';
+        const tokenUrl = config.environmentUrl + '/' + config.collectionName + '/' + tokenFileName;
+
+        tokens.push({ serialNumber: token.serialNumber, hash: tokenHash, url: tokenUrl });
     }
 
     return {
-        defaultToken: defaultTokenFileHash,
-        factory: factoryFileHash,
+        factory,
+        defaultToken,
         tokens,
     };
 }
