@@ -45,8 +45,8 @@ There are two ways of obtaining the tool:
 You can manually build the binary/executable of the tool by cloning the repository on your system and following these steps:
 
 1. Install dependencies using `npm i`.
-2. **[Optional]** Create `config.json` file in the root directory of your repository. Refer to [Configuration file](#configuration-file) section for more info on the config file.
-3. Build the package using `npm run build` and it will generate the releases under `/releases` directory.
+2. Build the package using `npm run build` and it will generate the releases under `/releases` directory.
+3. **[Optional]** Create `config.json` file in the same directory where your binary/executable is present. Refer to [Configuration file](#configuration-file) section for more info on the config file.
 4. Run the generated binary using: `./releases/metadata-tool-vX-Y-Z-linux `
 
 ---

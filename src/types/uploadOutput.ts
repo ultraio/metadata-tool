@@ -48,7 +48,7 @@ export interface UploadOutput {
     tokens: Array<SerialHashUrl>;
 
     /**
-     * What relative URL belongs to what URL path.
+     * Urls for media (images etc).
      *
      * @type {UrlMap}
      * @memberof UploadOutput
