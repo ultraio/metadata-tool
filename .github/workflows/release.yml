@@ -3,9 +3,6 @@ on:
     push:
         branches:
             - main
-            - BLOCK-1339-output-format-fix-release-CI
-        # tags:
-        #     - '*'
 
     workflow_dispatch:
 
