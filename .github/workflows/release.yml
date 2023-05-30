@@ -1,0 +1,52 @@
+name: Release Action
+on:
+    push:
+        branches:
+            - main
+
+    workflow_dispatch:
+
+jobs:
+    build_and_release:
+        runs-on: ubuntu-latest
+        name: Build and create release
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Get package version
+              id: package-version
+              uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+            - name: Install dependencies
+              run: npm i
+
+            - name: Generate build
+              run: npm run build
+
+            - name: Generate release body
+              run: |
+                  echo ${{ steps.package-version.outputs.current-version }} >> release_body.txt
+
+            - run: ls ./releases
+
+            - name: Create release and add files
+              uses: softprops/action-gh-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
+              with:
+                  name: Release ${{ steps.package-version.outputs.current-version }}
+                  tag_name: ${{ steps.package-version.outputs.current-version }}
+                  body_path: release_body.txt
+                  files: ./releases/*
+
+            - name: Upload to slack step
+              uses: MeilCli/slack-upload-file@v3
+              with:
+                  slack_token: ${{ secrets.SLACK_TOKEN }}
+                  channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+                  file_type: auto
+                  file_path: releases/*
+                  initial_comment: '🎊 A new version of Metadata tool is available to download 🎊'
+            - run: echo "Finished. Job's status is ${{ job.status }}."
