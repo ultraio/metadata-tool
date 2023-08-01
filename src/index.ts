@@ -16,11 +16,13 @@ import { NFTData } from './types';
 import { outputJsonFiles } from './utils/outputJsonFiles';
 import { UploadOutput } from './types/uploadOutput';
 import { UrlMapper } from './utils/urlMapper';
+const { version } = require('../package.json');
 
 const glob = promisify(globMod);
 
 const main = async () => {
-    ReportGenerator.add('Started Program', false);
+    const VERSION = version;
+    ReportGenerator.add(`Started Metadata Tool v${VERSION}`, true);
     ExitHandlers.init();
 
     let fileType: 'csv' | 'json' = 'csv';
@@ -97,13 +99,6 @@ const main = async () => {
         await promptUser(errorMessage);
         return;
     }
-
-    // if (!isCSV && !files.includes(`defaultToken.json`)) {
-    //     const errorMessage = ErrorGenerator.get('MISSING_DEFAULT_TOKEN_FILE', '.json');
-    //     ReportGenerator.add(errorMessage);
-    //     await promptUser(errorMessage);
-    //     return;
-    // }
 
     // if processing csv files, notify if tokens file is present
     if (isCSV && files.includes(`tokens.${fileType}`)) {
@@ -254,6 +249,7 @@ const main = async () => {
                 env: config.environment,
                 tokenUriTemplate: nftData.factory.tokenUriTemplate,
                 url: config.environmentUrl,
+                toolVersion: VERSION,
             },
         };
 

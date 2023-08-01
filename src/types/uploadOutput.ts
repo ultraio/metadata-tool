@@ -21,6 +21,7 @@ export interface UploadOutput {
         env: string;
         url: string;
         tokenUriTemplate: '{serial_number}' | '{hash}'; // The uri template to follow to tokens - either "{serial_number}" or "{hash}"
+        toolVersion: string | undefined; // Version of this tool. Taken from package.json
     };
 
     /**
