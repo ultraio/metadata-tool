@@ -35,10 +35,15 @@ export async function outputJsonFiles(
     };
 
     if (data.defaultToken) {
+        // Don't include defaultToken.serialNumber when writing to file
         ReportGenerator.add(`Writing defaultToken.json to file.`);
-        fs.writeFileSync(paths.defaultToken, JSON.stringify(data.defaultToken, null, 2));
+        fs.writeFileSync(
+            paths.defaultToken,
+            JSON.stringify({ ...data.defaultToken, serialNumber: undefined }, null, 2)
+        );
     }
 
+    // Don't include factory.tokenUriTemplate when writing to file
     ReportGenerator.add(`Writing factory.json to file.`);
     fs.writeFileSync(paths.factory, JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2));
 
@@ -76,8 +81,9 @@ export async function outputJsonFiles(
     for (let token of data.tokens) {
         const tokenPath = normalizeUrl(path.join(workingDirectory, `/${token.serialNumber}.token.json`));
 
+        // Don't include token.serialNumber when writing to file
         ReportGenerator.add(`Writing ${token.serialNumber}.token.json to file.`);
-        fs.writeFileSync(tokenPath, JSON.stringify(token, null, 2));
+        fs.writeFileSync(tokenPath, JSON.stringify({ ...token, serialNumber: undefined }, null, 2));
 
         const tokenHash = await HashGenerator.create(tokenPath);
         if (typeof tokenHash === 'undefined') {

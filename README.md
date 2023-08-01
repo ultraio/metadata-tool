@@ -193,7 +193,9 @@ The `upload.json` file contains all metadata (collection name, factory/token has
     },
     "environment": {
         "env": "production",
-        "url": "https://www.my-nft-website.com"
+        "tokenUriTemplate": "{serial_number}",
+        "url": "https://www.my-nft-website.com",
+        "toolVersion": "1.4.0"
     }
 }
 ```
