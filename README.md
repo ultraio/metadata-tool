@@ -202,8 +202,3 @@ The `upload.json` file contains all metadata (collection name, factory/token has
 
 Note that the URLs provided in the output file are based on the environment URIs that were provided to the program. These URLs are where your Uniq metadata files _should_ be hosted/uploaded.
 
----
-
-## License
-
-TODO
