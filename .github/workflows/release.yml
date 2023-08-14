@@ -1,11 +1,7 @@
 name: Release Action
 on:
-    push:
-        branches:
-            - main
-
-    workflow_dispatch:
-
+  release:
+    types: [created]
 jobs:
     build_and_release:
         runs-on: ubuntu-latest
