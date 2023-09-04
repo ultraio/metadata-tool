@@ -1,10 +1,13 @@
 name: Release Action
 on:
-  release:
-    types: [created]
+    push:
+        branches:
+            - 'BLOCK-1659-code-signing'
+    # release:
+    #     types: [created]
 jobs:
     build_and_release:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         name: Build and create release
 
         steps:
@@ -27,27 +30,39 @@ jobs:
             - name: Generate build
               run: npm run build
 
+            - name: Sign executable/binary file
+              uses: dlemstra/code-sign-action@v1
+              with:
+                  certificate: '${{ secrets.SIGNING_CERT }}'
+                  password: '${{ secrets.SIGNING_CERT_PASSWORD }}'
+                  folder: './releases'
+                  recursive: true
+                  # files: |
+                  #     file1
+                  #     file2
+                  description: 'Ultra Metadata Tool'
+
             - name: Generate release body
               run: |
                   echo ${{ steps.package-version.outputs.current-version }} >> release_body.txt
 
             - run: ls ./releases
 
-            - name: Create release and add files
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
-              with:
-                  name: Release ${{ steps.package-version.outputs.current-version }}
-                  tag_name: ${{ steps.package-version.outputs.current-version }}
-                  body_path: release_body.txt
-                  files: ./releases/*
+            # - name: Create release and add files
+            #   uses: softprops/action-gh-release@v1
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
+            #   with:
+            #       name: Release ${{ steps.package-version.outputs.current-version }}
+            #       tag_name: ${{ steps.package-version.outputs.current-version }}
+            #       body_path: release_body.txt
+            #       files: ./releases/*
 
             - name: Upload to slack step
               uses: MeilCli/slack-upload-file@v3
               with:
                   slack_token: ${{ secrets.SLACK_TOKEN }}
-                  channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+                  channel_id: ${{ secrets.DEBUG_SLACK_CHANNEL_ID }}
                   file_type: auto
                   file_path: releases/*
                   initial_comment: '🎊 A new version of Metadata tool is available to download 🎊'
