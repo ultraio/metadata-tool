@@ -46,9 +46,7 @@ jobs:
                   password: '${{ secrets.SIGNING_CERT_PASSWORD }}'
                   folder: './releases'
                   recursive: true
-                  # files: |
-                  #     file1
-                  #     file2
+                  files: ./releases/*
                   description: 'Ultra Metadata Tool'
 
             - name: Generate release body
