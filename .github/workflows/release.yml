@@ -1,10 +1,7 @@
 name: Release Action
 on:
-    push:
-        branches:
-            - 'BLOCK-1659-code-signing'
-    # release:
-    #     types: [created]
+    release:
+        types: [created]
 jobs:
     build_and_release:
         runs-on: windows-latest
@@ -31,7 +28,7 @@ jobs:
                   path: .
 
             - name: Print the version
-              run: echo "The version was ${{ steps.get-version.outputs.version }}"
+              run: echo "Metadata tool version v${{ steps.get-version.outputs.version }}"
 
             - name: Install dependencies
               run: npm i
@@ -55,15 +52,15 @@ jobs:
 
             - run: ls ./releases
 
-            # - name: Create release and add files
-            #   uses: softprops/action-gh-release@v1
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
-            #   with:
-            #       name: Release ${{ steps.package-version.outputs.current-version }}
-            #       tag_name: ${{ steps.package-version.outputs.current-version }}
-            #       body_path: release_body.txt
-            #       files: ./releases/*
+            - name: Create release and add files
+              uses: softprops/action-gh-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
+              with:
+                  name: Release ${{ steps.get-version.outputs.version }}
+                  tag_name: ${{ steps.get-version.outputs.version }}
+                  body_path: release_body.txt
+                  files: ./releases/*
 
             - name: Upload to slack step
               uses: MeilCli/slack-upload-file@v3
