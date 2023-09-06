@@ -1,10 +1,10 @@
 name: Release Action
 on:
-  release:
-    types: [created]
+    release:
+        types: [created]
 jobs:
     build_and_release:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         name: Build and create release
 
         steps:
@@ -17,9 +17,18 @@ jobs:
                   node-version: 16.16.0
             - run: node -v
 
+            # - name: Get package version
+            #   id: package-version
+            #   uses: martinbeentjes/npm-get-version-action@v1.3.1
+
             - name: Get package version
-              id: package-version
-              uses: martinbeentjes/npm-get-version-action@v1.3.1
+              id: get-version
+              uses: beaconbrigade/package-json-version@v0.3
+              with:
+                  path: .
+
+            - name: Print the version
+              run: echo "Metadata tool version v${{ steps.get-version.outputs.version }}"
 
             - name: Install dependencies
               run: npm i
@@ -27,9 +36,19 @@ jobs:
             - name: Generate build
               run: npm run build
 
+            - name: Sign executable/binary file
+              uses: dlemstra/code-sign-action@v1
+              with:
+                  certificate: '${{ secrets.SIGNING_CERT }}'
+                  password: '${{ secrets.SIGNING_CERT_PASSWORD }}'
+                  folder: './releases'
+                  recursive: true
+                  files: ./releases/*
+                  description: 'Ultra Metadata Tool'
+
             - name: Generate release body
               run: |
-                  echo ${{ steps.package-version.outputs.current-version }} >> release_body.txt
+                  echo ${{ steps.get-version.outputs.version }} >> release_body.txt
 
             - run: ls ./releases
 
@@ -38,8 +57,8 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.BLOCKCHAIN_CI_SECRET }}
               with:
-                  name: Release ${{ steps.package-version.outputs.current-version }}
-                  tag_name: ${{ steps.package-version.outputs.current-version }}
+                  name: Release ${{ steps.get-version.outputs.version }}
+                  tag_name: ${{ steps.get-version.outputs.version }}
                   body_path: release_body.txt
                   files: ./releases/*
 
