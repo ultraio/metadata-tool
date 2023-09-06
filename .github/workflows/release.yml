@@ -66,7 +66,7 @@ jobs:
               uses: MeilCli/slack-upload-file@v3
               with:
                   slack_token: ${{ secrets.SLACK_TOKEN }}
-                  channel_id: ${{ secrets.DEBUG_SLACK_CHANNEL_ID }}
+                  channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
                   file_type: auto
                   file_path: releases/*
                   initial_comment: '🎊 A new version of Metadata tool is available to download 🎊'
