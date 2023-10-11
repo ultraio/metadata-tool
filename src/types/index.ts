@@ -42,11 +42,6 @@ export interface Metadata {
     description?: string;
 
     /**
-     * Specify the type of the NFT asset
-     */
-    type?: 'collectible' | 'game';
-
-    /**
      * Specify the author(s) of the asset to which this NFT represents
      */
     author?: string;

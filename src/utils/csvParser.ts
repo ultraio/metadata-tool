@@ -17,7 +17,7 @@ const Internal = {
             parseCsv({
                 delimiter: ',',
                 columns: true,
-                toLine: fileType == 'factory' ? 2 : undefined, // we only read the first data row from factory.csv
+                to: fileType == 'factory' ? 1 : undefined, // we only read the first data row from factory.csv
                 onRecord: fileType == 'factory' ? Internal.prepareFactory : Internal.prepareToken,
             })
         );
@@ -36,7 +36,6 @@ const Internal = {
     prepareMetadata(record: any): Metadata {
         let metadata = {} as Metadata;
         metadata.specVersion = record['specVersion'];
-        metadata.type = record['type'];
         metadata.name = record['name'];
         metadata.subName = record['subName'];
         metadata.description = record['description'];
