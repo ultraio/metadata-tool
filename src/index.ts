@@ -262,4 +262,6 @@ const main = async () => {
     await promptUser(exitMessage);
 };
 
-main();
+main().catch((err) => {
+    ReportGenerator.add(`Error occurred: ${err}`);
+});
