@@ -57,9 +57,12 @@ export async function outputJsonFiles(
 
         const defaultTokenFileName =
             (data.factory.tokenUriTemplate == '{serial_number}' ? '{serial_number}' : defaultTokenHash) + '.json';
-        const defaultTokenUrl = encodeURI(
-            config.environmentUrl + '/' + config.collectionName?.replace(/\s/g, '') + '/' + defaultTokenFileName
-        );
+        const defaultTokenUrl =
+            config.environmentUrl +
+            '/' +
+            encodeURIComponent(config.collectionName!.replace(/\s/g, '')) +
+            '/' +
+            defaultTokenFileName;
 
         defaultToken = {
             hash: defaultTokenHash,
@@ -75,9 +78,13 @@ export async function outputJsonFiles(
 
     const factory: HashUrl = {
         hash: factoryHash,
-        url: encodeURI(
-            config.environmentUrl + '/' + config.collectionName?.replace(/\s/g, '') + '/' + factoryHash + '.json'
-        ),
+        url:
+            config.environmentUrl +
+            '/' +
+            encodeURIComponent(config.collectionName!.replace(/\s/g, '')) +
+            '/' +
+            factoryHash +
+            '.json',
     };
 
     const tokens: Array<SerialHashUrl> = [];
@@ -97,9 +104,12 @@ export async function outputJsonFiles(
 
         const tokenFileName =
             (data.factory.tokenUriTemplate == '{serial_number}' ? token.serialNumber : tokenHash) + '.json';
-        const tokenUrl = encodeURI(
-            config.environmentUrl + '/' + config.collectionName?.replace(/\s/g, '') + '/' + tokenFileName
-        );
+        const tokenUrl =
+            config.environmentUrl +
+            '/' +
+            encodeURIComponent(config.collectionName!.replace(/\s/g, '')) +
+            '/' +
+            tokenFileName;
 
         tokens.push({ serialNumber: token.serialNumber, hash: tokenHash, url: tokenUrl });
     }
