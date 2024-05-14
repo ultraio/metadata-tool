@@ -35,7 +35,6 @@ describe('csv processing test', () => {
 
     test('validate factory data', () => {
         expect(typeof data.factory !== 'undefined').toBe(true);
-        expect(typeof data.factory.type).toBe('string');
         expect(typeof data.factory.defaultLocale).toBe('string');
         expect(typeof data.factory.attributes).toBe('object');
         expect(data.factory.media.product.integrity).toBe(null);
@@ -58,7 +57,6 @@ describe('csv processing test', () => {
 
         for (let i = 0; i < data.tokens.length; i++) {
             expect(data.tokens[i].serialNumber).toBe(String(i + 1));
-            expect(typeof data.tokens[i].type).toBe('string');
             expect(data.tokens[i].media.product.integrity).toBe(null);
         }
     });

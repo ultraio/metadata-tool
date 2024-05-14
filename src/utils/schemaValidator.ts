@@ -5,6 +5,9 @@ import { TokenSchema } from '../schemas/token';
 import { ReportGenerator } from './reportGenerator';
 
 const ajvInstance = new ajv({ allowUnionTypes: true });
+
+ajvInstance.addKeyword('tsType');
+
 const SchemaBindings = {
     factory: FactorySchema,
     extendedFactory: ExtendedFactorySchema,

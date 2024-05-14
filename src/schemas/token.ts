@@ -3,9 +3,14 @@ export const TokenSchema = {
     title: 'TokenMetadata',
     description: 'The NFT metadata',
     properties: {
+        serialNumber: {
+            type: ['string', 'number'],
+            description: 'A serial identifier of this token',
+            nullable: true
+        },
         specVersion: {
             type: 'string',
-            tsType: "'1.0'",
+            "tsType": "'1.0'",
             description: 'The version of the NFT metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
             pattern: '^1\\.0?$'
         },
@@ -45,18 +50,18 @@ export const TokenSchema = {
                 square: { $ref: '#/definitions/staticResource' },
                 hero: { $ref: '#/definitions/staticResource' },
                 gallery: {
-                    description: 'A list of path pointing to images, videos... relative from this manifest relative from this manifest.',
+                    description: 'A list of path pointing to images, videos... relative from this manifest.',
                     type: 'array',
-                    items: { $ref: '#/definitions/staticResource' }
-                }
+                    items: { $ref: '#/definitions/staticResource' },
+                },
             },
             required: ['product', 'square'],
-            additionalProperties: false
+            additionalProperties: false,
         },
         properties: {
             description: 'Specify the properties for this NFT',
             type: 'object',
-            additionalProperties: true
+            additionalProperties: true,
         },
         attributes: {
             description: 'Specify the attributes for this NFT',
@@ -85,7 +90,7 @@ export const TokenSchema = {
                 uris: {
                     type: 'array',
                     minItems: 1,
-                    items: { type: 'string' }
+                    items: { type: 'string' },
                 },
                 integrity: {
                     type: 'object',
@@ -96,15 +101,15 @@ export const TokenSchema = {
                             description: 'only 64 characters SHA256 hash is supported initially',
                             minLength: 64,
                             maxLength: 64,
-                            pattern: '^([a-fA-F0-9]{2})+$'
-                        }
+                            pattern: '^([a-fA-F0-9]{2})+$',
+                        },
                     },
                     required: ['type', 'hash'],
                     additionalProperties: false
                 }
             },
             required: ['contentType', 'uris', 'integrity'],
-            additionalProperties: false
+            additionalProperties: false,
         },
         dynamicResource: {
             type: 'object',
