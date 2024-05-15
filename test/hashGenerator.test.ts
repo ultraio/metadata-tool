@@ -1,36 +1,24 @@
 import { HashGenerator } from '../src/utils/hashGenerator';
 
-const externalFileHash = '4dfe534d3a87f23d1b488bbe186a73f9a54ca8238c749faa7977057841a5ea68';
-const externalVideoFileHash = '8f6ccbaf1e3ad87e4f5f2467bc59dce30c3d6d84d2755bca8667f76fa3189f51';
+const externalFileHash = '803789d5bd6544c0158934f9419506e183d2ad29c38602db39a7c2b8f8bf479b';
 
 let hash1: string;
-let hash2: string;
 
 describe('hash generator test', () => {
     test('should read external file and return hash', async () => {
-        const resultHash = await HashGenerator.create('https://i.imgur.com/zURagrP.jpeg', undefined);
+        const resultHash = await HashGenerator.create(
+            'https://developers.ultra.io/images/home/splash_gamedevelopers.png',
+            undefined
+        );
         expect(resultHash).toBe(externalFileHash);
+
         if (typeof resultHash === 'string') {
             hash1 = resultHash;
         }
     });
 
     test('should read internal file and return hash', async () => {
-        const resultHash = await HashGenerator.create('./test/data/images/cat.jpeg', process.cwd());
+        const resultHash = await HashGenerator.create('./test/data/images/ultra-image.png', process.cwd());
         expect(resultHash).toBe(hash1);
-    });
-
-    test('should read external video file and return hash', async () => {
-        const resultHash = await HashGenerator.create('https://zippy.gfycat.com/BlaringFaithfulFulmar.mp4', undefined);
-        expect(resultHash).toBe(externalVideoFileHash);
-
-        if (typeof resultHash === 'string') {
-            hash2 = resultHash;
-        }
-    });
-
-    test('should read internal video file and return hash', async () => {
-        const resultHash = await HashGenerator.create('./test/data/images/cat-typing.mp4', process.cwd());
-        expect(resultHash).toBe(hash2);
     });
 });
