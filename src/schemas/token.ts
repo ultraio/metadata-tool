@@ -6,41 +6,44 @@ export const TokenSchema = {
         serialNumber: {
             type: ['string', 'number'],
             description: 'A serial identifier of this token',
-            nullable: true
+            nullable: true,
         },
         specVersion: {
             type: 'string',
-            "tsType": "'1.0'",
-            description: 'The version of the NFT metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
-            pattern: '^1\\.0?$'
+            enum: ['1.0'],
+            description:
+                'The version of the NFT metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
+            pattern: '^1\\.0?$',
         },
         name: {
             type: 'string',
             minLength: 1,
             maxLength: 256,
-            description: 'Identifies the asset to which this NFT represents'
+            description: 'Identifies the asset to which this NFT represents',
         },
         subName: {
             type: 'string',
             minLength: 1,
             maxLength: 256,
-            description: 'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”'
+            description:
+                'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
         },
         description: {
             type: 'string',
             description: 'Long description of the asset to which this NFT represents',
-            maxLength: 4096
+            maxLength: 4096,
         },
         author: {
             type: 'string',
             minLength: 1,
             maxLength: 256,
-            description: 'Specify the author(s) of the asset to which this NFT represents'
+            description: 'Specify the author(s) of the asset to which this NFT represents',
         },
         defaultLocale: {
             type: 'string',
             enum: ['en-US'],
-            description: 'Specify the local of this metadata. The value must be one of the locales from the list available here: https://github.com/unicode-org/cldr-json/blob/master/cldr-json/cldr-core/availableLocales.json'
+            description:
+                'Specify the local of this metadata. The value must be one of the locales from the list available here: https://github.com/unicode-org/cldr-json/blob/master/cldr-json/cldr-core/availableLocales.json',
         },
         media: {
             description: 'Specify the advertising content for this NFT',
@@ -66,17 +69,17 @@ export const TokenSchema = {
         attributes: {
             description: 'Specify the attributes for this NFT',
             type: 'object',
-            additionalProperties: { type: ['boolean', 'number', 'string'] }
+            additionalProperties: { type: ['boolean', 'number', 'string'] },
         },
         dynamicAttributes: { $ref: '#/definitions/dynamicResource' },
         resources: {
             type: 'object',
-            additionalProperties: { $ref: '#/definitions/staticResource' }
+            additionalProperties: { $ref: '#/definitions/staticResource' },
         },
         dynamicResources: {
             type: 'object',
-            additionalProperties: { $ref: '#/definitions/dynamicResource' }
-        }
+            additionalProperties: { $ref: '#/definitions/dynamicResource' },
+        },
     },
     required: ['specVersion', 'name', 'defaultLocale', 'media'],
     additionalProperties: false,
@@ -105,8 +108,8 @@ export const TokenSchema = {
                         },
                     },
                     required: ['type', 'hash'],
-                    additionalProperties: false
-                }
+                    additionalProperties: false,
+                },
             },
             required: ['contentType', 'uris', 'integrity'],
             additionalProperties: false,
@@ -120,11 +123,11 @@ export const TokenSchema = {
                 uris: {
                     type: 'array',
                     minItems: 1,
-                    items: { type: 'string' }
-                }
+                    items: { type: 'string' },
+                },
             },
             required: ['contentType', 'uris'],
-            additionalProperties: false
-        }
-    }
+            additionalProperties: false,
+        },
+    },
 };

@@ -5,9 +5,10 @@ export const FactorySchema = {
     properties: {
         specVersion: {
             type: 'string',
-            tsType: "'1.0'",
-            description: 'The version of the NFT Factory metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
-            pattern: '^1\\.0?$'
+            enum: ['1.0'],
+            description:
+                'The version of the NFT Factory metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
+            pattern: '^1\\.0?$',
         },
         name: {
             type: 'string',
@@ -19,7 +20,8 @@ export const FactorySchema = {
             type: 'string',
             minLength: 1,
             maxLength: 256,
-            description: 'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
+            description:
+                'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
         },
         description: {
             type: 'string',
@@ -35,7 +37,8 @@ export const FactorySchema = {
         defaultLocale: {
             type: 'string',
             enum: ['en-US'],
-            description: 'Specify the local of this metadata. The value must be one of the locales from the list available here: https://github.com/unicode-org/cldr-json/blob/master/cldr-json/cldr-core/availableLocales.json',
+            description:
+                'Specify the local of this metadata. The value must be one of the locales from the list available here: https://github.com/unicode-org/cldr-json/blob/master/cldr-json/cldr-core/availableLocales.json',
         },
         media: {
             description: 'Specify the advertising content for this NFT Factory',
@@ -45,7 +48,8 @@ export const FactorySchema = {
                 square: { $ref: '#/definitions/staticResource' },
                 hero: { $ref: '#/definitions/staticResource' },
                 gallery: {
-                    description: 'A list of path pointing to images, videos... relative from this manifest relative from this manifest.',
+                    description:
+                        'A list of path pointing to images, videos... relative from this manifest relative from this manifest.',
                     type: 'array',
                     items: { $ref: '#/definitions/staticResource' },
                 },
@@ -65,7 +69,7 @@ export const FactorySchema = {
                 type: 'object',
                 properties: {
                     dynamic: {
-                        oneOf: [{ type: 'boolean' }, { type: 'null' }]
+                        oneOf: [{ type: 'boolean' }, { type: 'null' }],
                     },
                     type: {
                         type: 'string',
