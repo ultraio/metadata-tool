@@ -10,15 +10,10 @@ export const TokenSchema = {
         },
         specVersion: {
             type: 'string',
+            enum: ['1.0'],
             description:
                 'The version of the NFT metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
-        },
-        type: {
-            type: 'string',
-            enum: ['game', 'collectible'],
-            minLength: 1,
-            maxLength: 256,
-            description: 'Identifies the type of asset that this NFT Factory represents',
+            pattern: '^1\\.0?$',
         },
         name: {
             type: 'string',
@@ -28,6 +23,7 @@ export const TokenSchema = {
         },
         subName: {
             type: 'string',
+            minLength: 1,
             maxLength: 256,
             description:
                 'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
@@ -39,6 +35,7 @@ export const TokenSchema = {
         },
         author: {
             type: 'string',
+            minLength: 1,
             maxLength: 256,
             description: 'Specify the author(s) of the asset to which this NFT represents',
         },
@@ -56,8 +53,7 @@ export const TokenSchema = {
                 square: { $ref: '#/definitions/staticResource' },
                 hero: { $ref: '#/definitions/staticResource' },
                 gallery: {
-                    description:
-                        'A list of path pointing to images, videos... relative from this manifest relative from this manifest.',
+                    description: 'A list of path pointing to images, videos... relative from this manifest.',
                     type: 'array',
                     items: { $ref: '#/definitions/staticResource' },
                 },
@@ -73,9 +69,7 @@ export const TokenSchema = {
         attributes: {
             description: 'Specify the attributes for this NFT',
             type: 'object',
-            additionalProperties: {
-                oneOf: [{ type: 'boolean' }, { type: 'string' }, { type: 'number' }],
-            },
+            additionalProperties: { type: ['boolean', 'number', 'string'] },
         },
         dynamicAttributes: { $ref: '#/definitions/dynamicResource' },
         resources: {
@@ -115,10 +109,9 @@ export const TokenSchema = {
                     },
                     required: ['type', 'hash'],
                     additionalProperties: false,
-                    nullable: true,
                 },
             },
-            required: ['contentType', 'uris'],
+            required: ['contentType', 'uris', 'integrity'],
             additionalProperties: false,
         },
         dynamicResource: {

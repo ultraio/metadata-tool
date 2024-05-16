@@ -4,7 +4,6 @@ export const FactoryMetaExample: FactoryMetaData = {
     specVersion: '1.0',
     defaultLocale: 'en-US',
     tokenUriTemplate: '{serial_number}',
-    type: 'game',
     name: 'Fallout 99',
     author: 'Bethesda Studios',
     description: "Explore the wasteland of 'x' in this post apocalyptic adventure game.",

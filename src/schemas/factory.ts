@@ -1,18 +1,14 @@
 export const FactorySchema = {
     type: 'object',
+    title: 'FactoryMetadata',
     description: 'The NTF Factory metadata',
     properties: {
         specVersion: {
             type: 'string',
+            enum: ['1.0'],
             description:
                 'The version of the NFT Factory metadata standard specification which the manifest uses. This enables the interpretation of the context. Compliant manifests MUST use a value of 0.1 when referring to this version of the specification.',
-        },
-        type: {
-            type: 'string',
-            enum: ['game', 'collectible'],
-            minLength: 1,
-            maxLength: 256,
-            description: 'Identifies the type of asset that this NFT Factory represents',
+            pattern: '^1\\.0?$',
         },
         name: {
             type: 'string',
@@ -22,6 +18,7 @@ export const FactorySchema = {
         },
         subName: {
             type: 'string',
+            minLength: 1,
             maxLength: 256,
             description:
                 'A secondary name that identify a special flavor of the asset to which this NFT represents. For example “Limited Edition”',
@@ -71,7 +68,9 @@ export const FactorySchema = {
             additionalProperties: {
                 type: 'object',
                 properties: {
-                    dynamic: { type: 'boolean' },
+                    dynamic: {
+                        oneOf: [{ type: 'boolean' }, { type: 'null' }],
+                    },
                     type: {
                         type: 'string',
                         enum: ['boolean', 'number', 'string', 'ISODateString'],
@@ -93,6 +92,7 @@ export const FactorySchema = {
     definitions: {
         staticResource: {
             type: 'object',
+            title: 'StaticResource',
             description: 'A static resource provides a hash to check integrity',
             properties: {
                 contentType: { type: 'string' },
@@ -115,10 +115,9 @@ export const FactorySchema = {
                     },
                     required: ['type', 'hash'],
                     additionalProperties: false,
-                    nullable: true,
                 },
             },
-            required: ['contentType', 'uris'],
+            required: ['contentType', 'uris', 'integrity'],
             additionalProperties: false,
         },
     },
