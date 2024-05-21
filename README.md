@@ -1,19 +1,19 @@
 # Metadata Tool
 
-- [Metadata Tool](#metadata-tool)
-  - [Overview](#overview)
-  - [Obtaining the tool](#obtaining-the-tool)
-    - [Downloading a release:](#downloading-a-release)
-    - [Building a binary/executable:](#building-a-binaryexecutable)
-  - [Configuration file](#configuration-file)
-  - [How to use](#how-to-use)
-    - [Setup Folder Structure:](#setup-folder-structure)
-    - [Setup CSV Template:](#setup-csv-template)
-    - [Image/Media Pathing:](#imagemedia-pathing)
-    - [Supported Media Types:](#supported-media-types)
-    - [Running the tool:](#running-the-tool)
-    - [Output file structure:](#output-file-structure)
-  - [License](#license)
+-   [Metadata Tool](#metadata-tool)
+    -   [Overview](#overview)
+    -   [Obtaining the tool](#obtaining-the-tool)
+        -   [Downloading a release:](#downloading-a-release)
+        -   [Building a binary/executable:](#building-a-binaryexecutable)
+    -   [Configuration file](#configuration-file)
+    -   [How to use](#how-to-use)
+        -   [Setup Folder Structure:](#setup-folder-structure)
+        -   [Setup CSV Template:](#setup-csv-template)
+        -   [Image/Media Pathing:](#imagemedia-pathing)
+        -   [Supported Media Types:](#supported-media-types)
+        -   [Note for media files:](#note-for-media-files)
+        -   [Running the tool:](#running-the-tool)
+        -   [Output file structure:](#output-file-structure)
 
 ---
 
@@ -141,6 +141,10 @@ The tool currently only supports the follow media types:
 -   webm
 -   json
 
+### Note for media files:
+
+All media files are copied and renamed to their hash value. For example, if you have a media file `/factory/sq.png`, it will be copied, and renamed to `/generated_media/<hash>.png`.
+
 ### Running the tool:
 
 Once the CSV files and all related images/media files are present in the folder, you can process the folder for JSON creation.
@@ -183,13 +187,11 @@ The `upload.json` file contains all metadata (collection name, factory/token has
         }
     ],
     "media": {
-        "factory/sq.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "factory/product.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "factory/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/1/image.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/1/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/2/image.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/2/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png"
+        "generated_media/<hash-of-file1>.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file1>.png",
+        "generated_media/<hash-of-file2>.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file2>.png",
+        "generated_media/<hash-of-file3>.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file3>.png",
+         .....
+         .....
     },
     "environment": {
         "env": "production",
@@ -201,4 +203,3 @@ The `upload.json` file contains all metadata (collection name, factory/token has
 ```
 
 Note that the URLs provided in the output file are based on the environment URIs that were provided to the program. These URLs are where your Uniq metadata files _should_ be hosted/uploaded.
-
