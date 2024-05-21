@@ -45,12 +45,14 @@ const Internal = {
         metadata.media = {
             product: {
                 contentType: pathToMimeType(record['product']),
-                integrity: null,
+                // Temporary hash value, only for schema validation purposes. Will be replaced by the actual hash later by the integrityBuilder
+                integrity: { type: 'SHA256', hash: '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5' },
                 uris: [record['product']],
             },
             square: {
                 contentType: pathToMimeType(record['square']),
-                integrity: null,
+                // Temporary hash value, only for schema validation purposes. Will be replaced by the actual hash later by the integrityBuilder
+                integrity: { type: 'SHA256', hash: '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5' },
                 uris: [record['square']],
             },
         };
@@ -58,7 +60,8 @@ const Internal = {
         if (record['hero']) {
             metadata.media.hero = {
                 contentType: pathToMimeType(record['hero']),
-                integrity: null,
+                // Temporary hash value, only for schema validation purposes. Will be replaced by the actual hash later by the integrityBuilder
+                integrity: { type: 'SHA256', hash: '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5' },
                 uris: [record['hero']],
             };
         }
@@ -81,7 +84,11 @@ const Internal = {
             if (element) {
                 result.push({
                     contentType: pathToMimeType(element),
-                    integrity: null,
+                    // Temporary hash value, only for schema validation purposes. Will be replaced by the actual hash later by the integrityBuilder
+                    integrity: {
+                        type: 'SHA256',
+                        hash: '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5',
+                    },
                     uris: [element],
                 });
             }

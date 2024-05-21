@@ -5,10 +5,13 @@ import { ReportGenerator } from './utils/reportGenerator';
 // List of all available envs and their corresponding url
 let envUrlMapping = {};
 
+export const DEFAULT_GENERATED_MEDIA_DIR = 'generated_media';
+
 export interface Config {
     environment: string | undefined; // Current env
     environmentUrl: string | undefined; // Current env url
     collectionName: string | undefined;
+    generatedMediaDir: string; // Path to generated media files
 }
 
 let defaultConfig: Config | undefined = undefined;
@@ -40,6 +43,7 @@ export function getConfig(): Config | undefined {
         environment: undefined,
         environmentUrl: undefined,
         collectionName: undefined,
+        generatedMediaDir: DEFAULT_GENERATED_MEDIA_DIR,
     };
 
     // Load all envs from config.json

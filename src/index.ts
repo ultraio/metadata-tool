@@ -5,7 +5,7 @@ import path from 'path';
 import { glob as globMod } from 'glob';
 import { promptUser, isValidUrl, CSVParser, JSONParser } from './utils';
 import { promisify } from 'util';
-import { Config, getConfig, getEnvs } from './config';
+import { DEFAULT_GENERATED_MEDIA_DIR, getConfig, getEnvs } from './config';
 import { ErrorGenerator } from './utils/errorGenerator';
 import { ReportGenerator } from './utils/reportGenerator';
 import { ExitHandlers } from './utils/exitHandlers';
@@ -78,7 +78,7 @@ const main = async () => {
                 type: 'list',
                 name: 'fileType',
                 message: 'Both .json and .csv files found. Select filetype to process: ',
-                choices: ['json', 'csv'],
+                choices: ['csv', 'json'],
             },
         ]));
     }
@@ -148,6 +148,7 @@ const main = async () => {
             environment: selectedEnv,
             environmentUrl: envs[selectedEnv],
             collectionName: undefined,
+            generatedMediaDir: DEFAULT_GENERATED_MEDIA_DIR,
         };
     } else {
         // else just update values
@@ -228,13 +229,13 @@ const main = async () => {
         ReportGenerator.add(`Building Hashes`, false);
         const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
 
+        // Create generated media directory if it doesn't exist
+        if (!fs.existsSync(path.join(folderPath, config.generatedMediaDir))) {
+            fs.mkdirSync(path.join(folderPath, config.generatedMediaDir));
+        }
+
         ReportGenerator.add(`Replacing URLs with Hashed Content`, false);
-        const updatedUrlsNftData = await replaceUrls<NFTData>(
-            hashesNftData,
-            folderPath,
-            config.collectionName,
-            config.environmentUrl
-        );
+        const updatedUrlsNftData = await replaceUrls<NFTData>(hashesNftData, folderPath, config);
 
         const fileHashData = await outputJsonFiles(updatedUrlsNftData, folderPath, config);
         const outputFilePath = path.join(folderPath, '/upload.json').replace(/\\/gm, '/');

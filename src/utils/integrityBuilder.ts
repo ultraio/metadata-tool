@@ -33,9 +33,6 @@ export async function buildHashes<T>(data: Object, workingDirectory: string): Pr
     // Finds Static Resource Objects & Creates Hashes
     if (objectHasKeys(data, StaticResourceKeys)) {
         const typedData = <StaticResource>data;
-        if (typedData.integrity !== null) {
-            return typedData as T;
-        }
 
         if (typedData.uris.length <= 0) {
             return typedData as T;
@@ -45,6 +42,7 @@ export async function buildHashes<T>(data: Object, workingDirectory: string): Pr
         for (let i = 0; i < typedData.uris.length; i++) {
             const newHash = await HashGenerator.create(typedData.uris[i], workingDirectory);
             if (typeof newHash === 'undefined') {
+                typedData.integrity = null;
                 return typedData as T;
             }
 
