@@ -37,7 +37,10 @@ describe('csv processing test', () => {
         expect(typeof data.factory !== 'undefined').toBe(true);
         expect(typeof data.factory.defaultLocale).toBe('string');
         expect(typeof data.factory.attributes).toBe('object');
-        expect(data.factory.media.product.integrity).toBe(null);
+        expect(data.factory.media.product.integrity).toBeTruthy();
+        expect(data.factory.media.product.integrity?.hash).toBe(
+            '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5'
+        );
     });
 
     test('validate default token data', () => {
@@ -46,7 +49,10 @@ describe('csv processing test', () => {
             expect(typeof data.defaultToken.name).toBe('string');
             expect(typeof data.defaultToken.defaultLocale).toBe('string');
             expect(typeof data.defaultToken.attributes).toBe('object');
-            expect(data.defaultToken.media.product.integrity).toBe(null);
+            expect(data.defaultToken.media.product.integrity).toBeTruthy();
+            expect(data.defaultToken.media.product.integrity?.hash).toBe(
+                '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5'
+            );
         }
     });
 
@@ -57,7 +63,10 @@ describe('csv processing test', () => {
 
         for (let i = 0; i < data.tokens.length; i++) {
             expect(data.tokens[i].serialNumber).toBe(String(i + 1));
-            expect(data.tokens[i].media.product.integrity).toBe(null);
+            expect(data.tokens[i].media.product.integrity).toBeTruthy();
+            expect(data.tokens[i].media.product.integrity?.hash).toBe(
+                '7cfe7bb3fc62c0ba4706ec1a2f78b3c8845c2985aa99bdefebae8fe18ea835e5'
+            );
         }
     });
 });
