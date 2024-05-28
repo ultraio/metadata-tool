@@ -17,7 +17,7 @@ export async function replaceUrls<T>(data: Object, workingDirectory: string, con
     if (data.hasOwnProperty('uris')) {
         const typedData = <StaticResource>data;
         for (let i = 0; i < typedData.uris.length; i++) {
-            if (typedData.uris.includes('http') || typedData.uris.includes('https')) {
+            if (typedData.uris[i].includes('http') || typedData.uris[i].includes('https')) {
                 continue;
             }
 
