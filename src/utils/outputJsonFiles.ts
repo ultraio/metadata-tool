@@ -36,7 +36,7 @@ export async function outputJsonFiles(
 
     if (data.defaultToken) {
         // Don't include defaultToken.serialNumber when writing to file
-        ReportGenerator.add(`Writing defaultToken.json to file.`);
+        ReportGenerator.add(`Writing default token to file.`);
         fs.writeFileSync(
             paths.defaultToken,
             JSON.stringify({ ...data.defaultToken, serialNumber: undefined }, null, 2)
@@ -44,7 +44,7 @@ export async function outputJsonFiles(
     }
 
     // Don't include factory.tokenUriTemplate when writing to file
-    ReportGenerator.add(`Writing factory.json to file.`);
+    ReportGenerator.add(`Writing factory to file.`);
     fs.writeFileSync(paths.factory, JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2));
 
     let defaultToken: HashUrl | undefined = undefined;
@@ -68,6 +68,9 @@ export async function outputJsonFiles(
             hash: defaultTokenHash,
             url: defaultTokenUrl,
         };
+
+        // Rename "defaultToken.json" to defaultTokenFileName
+        fs.renameSync(paths.defaultToken, normalizeUrl(path.join(workingDirectory, `/${defaultTokenFileName}`)));
     }
 
     const factoryHash = await HashGenerator.create(paths.factory);
@@ -76,6 +79,7 @@ export async function outputJsonFiles(
         process.exit(1);
     }
 
+    const factoryFileName = factoryHash + '.json';
     const factory: HashUrl = {
         hash: factoryHash,
         url:
@@ -83,17 +87,19 @@ export async function outputJsonFiles(
             '/' +
             encodeURIComponent(config.collectionName!.replace(/\s/g, '')) +
             '/' +
-            factoryHash +
-            '.json',
+            factoryFileName,
     };
+
+    // Rename "factory.json" to factoryFileName
+    fs.renameSync(paths.factory, normalizeUrl(path.join(workingDirectory, `/${factoryFileName}`)));
 
     const tokens: Array<SerialHashUrl> = [];
 
     for (let token of data.tokens) {
-        const tokenPath = normalizeUrl(path.join(workingDirectory, `/${token.serialNumber}.token.json`));
+        const tokenPath = normalizeUrl(path.join(workingDirectory, `/${token.serialNumber}.json`));
 
         // Don't include token.serialNumber when writing to file
-        ReportGenerator.add(`Writing ${token.serialNumber}.token.json to file.`);
+        ReportGenerator.add(`Writing token ${token.serialNumber} to file.`);
         fs.writeFileSync(tokenPath, JSON.stringify({ ...token, serialNumber: undefined }, null, 2));
 
         const tokenHash = await HashGenerator.create(tokenPath);
@@ -112,6 +118,11 @@ export async function outputJsonFiles(
             tokenFileName;
 
         tokens.push({ serialNumber: token.serialNumber, hash: tokenHash, url: tokenUrl });
+
+        if (data.factory.tokenUriTemplate == '{hash}') {
+            // Rename `${token.serialNumber}.json` to tokenFileName
+            fs.renameSync(tokenPath, normalizeUrl(path.join(workingDirectory, `/${tokenFileName}`)));
+        }
     }
 
     return {
