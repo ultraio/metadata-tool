@@ -226,7 +226,7 @@ const main = async () => {
 
     // Only build hashes if filetype is CSV - for JSON files we just need to verify schema
     if (isCSV) {
-        ReportGenerator.add(`Building Hashes`, false);
+        ReportGenerator.add(`Building Hashes`, true);
         const hashesNftData = await buildHashes<NFTData>(nftData, folderPath);
 
         // Create generated media directory if it doesn't exist
