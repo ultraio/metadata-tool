@@ -1,6 +1,9 @@
 {
-    "dev": "https://somehost.dev.com/some/path",
-    "qa": "https://somehost.qa.com/some/path",
-    "staging": "https://somehost.staging.com/some/path",
-    "prod": "https://somehost.com/some/path"
+  "environments": {
+    "dev": "https://static.dev.ultra.io/uniq/original",
+    "qa": "https://static.qa.ultra.io/uniq/original",
+    "staging": "https://static.staging.ultra.io/uniq/original",
+    "prod": "https://static.ultra.io/uniq/origial"
+  },
+  "preserveNewLineCharacters": true
 }

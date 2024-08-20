@@ -12,6 +12,7 @@ export interface Config {
     environmentUrl: string | undefined; // Current env url
     collectionName: string | undefined;
     generatedMediaDir: string; // Path to generated media files
+    preserveNewLineCharacters: boolean;
 }
 
 let defaultConfig: Config | undefined = undefined;
@@ -34,7 +35,7 @@ export function getConfig(): Config | undefined {
     const config = JSON.parse(configJson);
 
     // If config is not valid, will ask for env details from user
-    if (!config || Object.keys(config).length === 0) {
+    if (!config || !config.environments || Object.keys(config.environments).length === 0) {
         ReportGenerator.add(`Invalid config file. Will prompt user for env.`, false);
         return undefined;
     }
@@ -44,15 +45,17 @@ export function getConfig(): Config | undefined {
         environmentUrl: undefined,
         collectionName: undefined,
         generatedMediaDir: DEFAULT_GENERATED_MEDIA_DIR,
+        preserveNewLineCharacters: true
     };
 
     // Load all envs from config.json
-    Object.assign(envUrlMapping, config);
+    Object.assign(envUrlMapping, config.environments);
 
     // If only one env is listed in the config, select it by default
     if (Object.keys(envUrlMapping).length === 1) {
         defaultConfig.environment = Object.keys(envUrlMapping)[0];
-        defaultConfig.environmentUrl = config[defaultConfig.environment];
+        defaultConfig.environmentUrl = config.environments[defaultConfig.environment];
+        if (config.preserveNewLineCharacters) defaultConfig.preserveNewLineCharacters = config.preserveNewLineCharacters;
     }
 
     return defaultConfig;

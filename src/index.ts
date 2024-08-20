@@ -149,6 +149,7 @@ const main = async () => {
             environmentUrl: envs[selectedEnv],
             collectionName: undefined,
             generatedMediaDir: DEFAULT_GENERATED_MEDIA_DIR,
+            preserveNewLineCharacters: true,
         };
     } else {
         // else just update values
