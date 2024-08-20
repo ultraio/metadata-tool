@@ -14,6 +14,7 @@ const config: Config = {
     environmentUrl: envUrl,
     collectionName: collectionName,
     generatedMediaDir: 'test_generated_media',
+    preserveNewLineCharacters: true,
 };
 
 let data: NFTData;
