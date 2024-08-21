@@ -59,10 +59,13 @@ Here's an example of what the config file _might_ look like:
 
 ```json
 {
-    "production": "https://www.my-nft-website.com",
-    "staging": "https://staging.my-nft-website.com",
-    "mys3bucket": "https://s3.us-east-1.foobar.com",
-    "custom": "https://www.my-custom-env.com"
+    "environments": {
+        "production": "https://www.my-nft-website.com",
+        "staging": "https://staging.my-nft-website.com",
+        "mys3bucket": "https://s3.us-east-1.foobar.com",
+        "custom": "https://www.my-custom-env.com"
+    },
+    "preserveNewLineCharacters": true
 }
 ```
 
@@ -71,6 +74,8 @@ In the example above, the `production`, `staging`, `mys3bucket` and `custom` env
 Note that the environments and base URIs in the config file shown above are just examples, and you should replace them with the actual environment(s) for your use-case.
 
 **Note**: If you do not provide a config file, the tool will prompt you to enter a base URI.
+
+Additional option `preserveNewLineCharacters` will ensure that the `\n` characters in the descriptions will remain unchanged in the output JSON file. Otherwise, they will be escaped twice as `\\n`.
 
 ---
 

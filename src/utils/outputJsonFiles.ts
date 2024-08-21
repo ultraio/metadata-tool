@@ -11,6 +11,20 @@ function normalizeUrl(url: string) {
     return url.replace(/\\/gm, '/');
 }
 
+function writeToFile(path: string, data: string, config: Config) {
+    if (config.preserveNewLineCharacters) {
+        fs.writeFileSync(
+            path,
+            data.replace(/\\\\n/g, "\\n")
+        );
+    } else {
+        fs.writeFileSync(
+            path,
+            data
+        );
+    }
+}
+
 /**
  * Takes NFT Data, and writes to file.
  * After writing to file it re-reads the file to obtain a sha256 hash.
@@ -37,15 +51,20 @@ export async function outputJsonFiles(
     if (data.defaultToken) {
         // Don't include defaultToken.serialNumber when writing to file
         ReportGenerator.add(`Writing default token to file.`);
-        fs.writeFileSync(
+        writeToFile(
             paths.defaultToken,
-            JSON.stringify({ ...data.defaultToken, serialNumber: undefined }, null, 2)
-        );
+            JSON.stringify({ ...data.defaultToken, serialNumber: undefined }, null, 2),
+            config
+        )
     }
 
     // Don't include factory.tokenUriTemplate when writing to file
     ReportGenerator.add(`Writing factory to file.`);
-    fs.writeFileSync(paths.factory, JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2));
+    writeToFile(
+        paths.factory,
+        JSON.stringify({ ...data.factory, tokenUriTemplate: undefined }, null, 2),
+        config
+    )
 
     let defaultToken: HashUrl | undefined = undefined;
     if (data.defaultToken) {
@@ -100,7 +119,11 @@ export async function outputJsonFiles(
 
         // Don't include token.serialNumber when writing to file
         ReportGenerator.add(`Writing token ${token.serialNumber} to file.`);
-        fs.writeFileSync(tokenPath, JSON.stringify({ ...token, serialNumber: undefined }, null, 2));
+        writeToFile(
+            tokenPath,
+            JSON.stringify({ ...token, serialNumber: undefined }, null, 2),
+            config
+        );
 
         const tokenHash = await HashGenerator.create(tokenPath);
         if (typeof tokenHash === 'undefined') {
