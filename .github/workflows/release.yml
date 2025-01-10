@@ -17,10 +17,6 @@ jobs:
                   node-version: 16.16.0
             - run: node -v
 
-            # - name: Get package version
-            #   id: package-version
-            #   uses: martinbeentjes/npm-get-version-action@v1.3.1
-
             - name: Get package version
               id: get-version
               uses: beaconbrigade/package-json-version@v0.3
@@ -36,15 +32,26 @@ jobs:
             - name: Generate build
               run: npm run build
 
-            - name: Sign executable/binary file
-              uses: dlemstra/code-sign-action@v1
-              with:
-                  certificate: '${{ secrets.SIGNING_CERT }}'
-                  password: '${{ secrets.SIGNING_CERT_PASSWORD }}'
-                  folder: './releases'
-                  recursive: true
-                  files: ./releases/*
-                  description: 'Ultra Metadata Tool'
+            - name: Install Cloud KMS CNG Provider
+              env:
+                  CNG_INSTALLER_URL: https://github.com/GoogleCloudPlatform/kms-integrations/releases/download/cng-v1.1/kmscng-1.1-windows-amd64.zip
+                  CNG_INSTALLER_PATH: ${{ vars.RUNNER_TEMP }}\kmscng-1.1-windows-amd64
+              run: |
+                  Invoke-WebRequest -Uri $env:CNG_INSTALLER_URL -OutFile $env:RUNNER_TEMP\kmscng-1.1-windows-amd64.zip
+                  Expand-Archive -LiteralPath "$env:RUNNER_TEMP\kmscng-1.1-windows-amd64.zip" -DestinationPath $env:RUNNER_TEMP
+                  Start-Process msiexec.exe -ArgumentList "/i $env:CNG_INSTALLER_PATH\kmscng.msi /quiet" -Wait
+
+            - name: Sign Binary with signtool.exe
+              env:
+                  CODE_SIGNING_SA_CREDS: ${{ secrets.CODE_SIGNING_SA_CREDS }}
+                  CODE_SIGNING_NON_EV_CERTIFICATE: ${{ secrets.CODE_SIGNING_NON_EV_CERTIFICATE }}
+                  GOOGLE_APPLICATION_CREDENTIALS: ${{ vars.RUNNER_TEMP }}\.code-signing-sa.json
+                  CODE_SIGNING_NON_EV_CERTIFICATE_LOCATION: ${{ vars.RUNNER_TEMP }}\code-signing-non-ev.pem
+                  SIGNTOOL_PATH: C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe
+              run: |
+                  "[IO.File]::WriteAllBytes($env:GOOGLE_APPLICATION_CREDENTIALS, [Convert]::FromBase64String($env:CODE_SIGNING_SA_CREDS))"
+                  "[IO.File]::WriteAllBytes($env:CODE_SIGNING_NON_EV_CERTIFICATE_LOCATION, [Convert]::FromBase64String($env:CODE_SIGNING_NON_EV_CERTIFICATE))"
+                  "$SIGNTOOL_PATH sign /fd sha256 /t http://timestamp.digicert.com /f $env:CODE_SIGNING_NON_EV_CERTIFICATE_LOCATION /csp 'Google Cloud KMS Provider' /kc $env:CODE_SIGNING_KMS_KEY_PATH ./releases/metadata-tool-${{ steps.get-version.outputs.version }}-windows"
 
             - name: Generate release body
               run: |
